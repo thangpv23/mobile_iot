@@ -10,12 +10,12 @@ export default (props) => {
                 <Icon name='devices'
                       type='material-community'
                       color='#FFF'
-                      size={30}
+                      size={35}
                       style={styles.icon}>
                 </Icon>
             </View>
             <Text style={styles.text}>
-                Room 1
+                Device 1
             </Text>
         </View>
 

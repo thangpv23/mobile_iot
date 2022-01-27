@@ -20,8 +20,8 @@ const MyStack = () => (
         {/*<Stack.Screen name="Log In" component={Login}/>*/}
         {/*<Stack.Screen name="Sign Up" component={Signup}/>*/}
         {/*<Stack.Screen name="User_info" component={User_info}/>*/}
-        <Stack.Screen name="Home" component={Home}/>
-        <Stack.Screen name="Room" component={Room}/>
+        {/*<Stack.Screen name="Home" component={Home}/>*/}
+        {/*<Stack.Screen name="Room" component={Room}/>*/}
         <Stack.Screen name="Device" component={Device}/>
     </Stack.Navigator>
 );

@@ -88,7 +88,7 @@ export default ({navigation}) => {
                                             }
                                             title="Add"
                                             onPress={() => {
-                                                navigation.navigate("Room");
+                                                navigation.navigate("Device");
                                                 toggleOverlay()
                                             }}
 

@@ -2,7 +2,7 @@ import React from 'react';
 import {Icon, Input} from 'react-native-elements';
 import {StyleSheet, Text, TextInput, View} from "react-native";
 import {Button} from 'react-native-elements';
-import Header from "./Header";
+import Header from "./AppHeader";
 
 
 export default ({navigation}) => {

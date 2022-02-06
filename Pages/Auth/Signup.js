@@ -1,16 +1,13 @@
 import React from 'react';
 import {Button} from 'react-native-elements';
 import {StyleSheet, Text, TextInput, View} from "react-native";
-import Header from "./Header";
+import Header from "../../AppHeader";
 
 
 export default ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            <Header title={""}>
-
-            </Header>
             <View style={styles.container}>
                 <View>
                     <Text style={styles.textName}>

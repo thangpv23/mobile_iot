@@ -1,14 +1,11 @@
 import React from 'react';
 import {StyleSheet, Text, TextInput, View} from "react-native";
-import Header from './Header';
+import Header from '../AppHeader';
 export default () => {
 
     return (
         <View>
-            <Header title={""}>
-
-            </Header>
-
+            <Header title={""}/>
             <View>
                 <Text style={styles.textName}>
                     Thông tin tài khoản

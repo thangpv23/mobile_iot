@@ -1,11 +1,68 @@
 import React, {useState} from 'react';
 import {Button} from 'react-native-elements';
 import {Image, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {useSignInMutation} from "../../services/auth/auth";
+import {useGetHomeByIdQuery, useGetHomesQuery} from "../../services/home/home";
+import { AsyncStorage } from 'react-native';
+import {useDispatch} from "react-redux";
+import {setCredentials} from "../../services/auth/authSlice";
 
 
-export default ({navigation}) => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+
+export default  ({navigation}) => {
+    const initState = {
+        username: "",
+        password: "",
+    }
+    const [inputState, setInputState] = useState(initState);
+    const [signIn, {isLoading,data}] = useSignInMutation();
+    const dispatch = useDispatch();
+
+    const _storeData = async () =>{
+        try {
+            if(data){
+                await AsyncStorage.setItem("loginInfo",data);
+            }
+        }catch (e) {
+            console.log(e)
+        }
+    }
+    if(data){
+         dispatch(setCredentials(data))
+    }
+    const _retrieveData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('token');
+            if (value !== null) {
+                // We have data!!
+                console.log(value);
+            }
+        } catch (error) {
+            // Error retrieving data
+        }
+    };
+    const handleInput = (type, value) => {
+        setInputState({
+            ...inputState,
+            [type]: value,
+        })
+    };
+    const deleteInput = (type) => {
+        setInputState({
+            ...inputState,
+            [type]: "",
+        })
+    }
+
+    const handleSignIn = async () => {
+        try {
+            await signIn(inputState).unwrap();
+            await _storeData();
+            navigation.navigate("Home");
+        } catch (err) {
+            console.log(err)
+        }
+    }
     return (
         <View style={styles.container}>
             <View style={styles.container}>
@@ -13,30 +70,32 @@ export default ({navigation}) => {
                     <Text style={styles.textName}>Smartinum</Text>
                     <View style={styles.inputWrapper}>
                         <TextInput style={styles.inputText}
-                                   value={username}
-                                   onChangeText={setUsername}
+                                   onChangeText={(value) => handleInput("username", value)}
                                    placeholder="Username"
+                                   value={inputState.username}
                                    errorStyle={{color: "red"}}
                                    errorMessage="ENTER A VALID ERROR HERE"
                         />
                         {
-                            username   ?
-                            <TouchableOpacity style={styles.closeButtonParent} onPress={() => setUsername("")}>
-                                <Image style={styles.closeButton} source={require("../../assets/close.png")}/>
-                            </TouchableOpacity>:null
+                            inputState.username ?
+                                <TouchableOpacity style={styles.closeButtonParent}
+                                                  onPress={() => deleteInput("username")}>
+                                    <Image style={styles.closeButton} source={require("../../assets/close.png")}/>
+                                </TouchableOpacity> : null
                         }
                     </View>
                     <View style={styles.inputWrapper}>
                         <TextInput placeholder="Password" secureTextEntry={true}
-                                   value={password}
-                                   onChangeText={setPassword}
+                                   value={inputState.password}
+                                   onChangeText={(value) => handleInput("password", value)}
                                    style={styles.inputText}
                         />
                         {
-                            password ?
-                            <TouchableOpacity style={styles.closeButtonParent} onPress={() => setPassword("")}>
-                                <Image style={styles.closeButton} source={require("../../assets/close.png")}/>
-                            </TouchableOpacity>:null
+                            inputState.password ?
+                                <TouchableOpacity style={styles.closeButtonParent}
+                                                  onPress={() => deleteInput("password")}>
+                                    <Image style={styles.closeButton} source={require("../../assets/close.png")}/>
+                                </TouchableOpacity> : null
                         }
                     </View>
                     <View style={{
@@ -59,7 +118,7 @@ export default ({navigation}) => {
                                 color: 'white',
                                 marginHorizontal: 20,
                             }}
-                            onPress={() => navigation.navigate("User_info")}
+                            onPress={() => handleSignIn()}
 
                         />
                         <Button

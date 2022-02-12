@@ -15,15 +15,11 @@ export default ({navigation}) => {
     };
     return (
         <View>
-            <Header title={""}>
 
-            </Header>
             <Text style={styles.text}>
                 Username > Home 1
             </Text>
             <View style={styles.container}>
-
-
                 <View style={styles.main}>
                     <View style={styles.item}>
                         <Room_button/>

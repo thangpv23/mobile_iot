@@ -15,7 +15,7 @@ export default (props) => {
                 </Icon>
             </View>
             <Text style={styles.text}>
-                House 1
+                {props.name}
             </Text>
         </View>
 

@@ -1,11 +1,41 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button} from 'react-native-elements';
 import {StyleSheet, Text, TextInput, View} from "react-native";
-import Header from "../../AppHeader";
+import {useSignUpMutation} from "../../services/auth/auth";
+import {authApi} from "../../services/auth/auth";
+import {useDispatch} from "react-redux";
+import {useGetHomeByIdQuery, useGetHomesQuery} from "../../services/home/home";
 
 
 export default ({navigation}) => {
 
+    const initState = {
+            email: "",
+            username: "",
+            password: "",
+        confirmPassword: "",
+    };
+    const [inputState, setInputState] = useState(initState);
+    const [signUp,{isLoading}] = useSignUpMutation();
+
+    const handleInput = (type, value) => {
+        setInputState({
+            ...inputState,
+            [type]: value,
+        })
+    }
+    const handleSignUp =  async () => {
+        try {
+            const body = {
+                email:inputState.email,
+                login:inputState.username,
+                password:inputState.password,
+            };
+            await signUp(body).unwrap();
+        }catch(err) {
+            console.log(err)
+        }
+    }
     return (
         <View style={styles.container}>
             <View style={styles.container}>
@@ -18,16 +48,19 @@ export default ({navigation}) => {
                                placeholder="Email"
                                errorStyle={{color: "red"}}
                                errorMessage="Not a valid"
+                               onChangeText={(value) => handleInput("email", value)}
                     />
                     <TextInput style={styles.inputText}
                                placeholder="Username"
                                errorStyle={{color: "red"}}
                                errorMessage="Not a valid"
+                               onChangeText={(value) => handleInput("username", value)}
                     />
                     <TextInput placeholder="Password" secureTextEntry={true}
                                style={styles.inputText}
                                errorStyle={{color: "red"}}
                                errorMessage="Too short"
+                               onChangeText={(value) => handleInput("password", value)}
 
                     />
 
@@ -35,7 +68,7 @@ export default ({navigation}) => {
                                style={styles.inputText}
                                errorStyle={{color: "red"}}
                                errorMessage="Must be the same password"
-
+                               onChangeText={(value) => handleInput("confirmPassword", value)}
                     />
 
                     <View style={{
@@ -58,8 +91,7 @@ export default ({navigation}) => {
                                 color: 'white',
                                 marginHorizontal: 20,
                             }}
-                            onPress={() => navigation.navigate('Log In')}
-
+                            onPress={handleSignUp}
                         />
                         <Button
                             containerStyle={{

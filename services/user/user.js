@@ -1,7 +1,7 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react";
-import {homeApi} from "../home/home";
 
-export const roomApi = createApi({
+
+export const userApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: "http://10.0.2.2:8081/api/",
         prepareHeaders: (headers, {getState}) => {
@@ -13,27 +13,23 @@ export const roomApi = createApi({
             return headers
         },
     }),
+    tagTypes:['User'],
     endpoints: (builder) => ({
-        getRooms: builder.query({
-            query:(homeId) => ({
-                url:"/rooms",
+        getUser: builder.query({
+            query:() => ({
+                url:`/account`,
                 method:"GET",
             }),
+            providesTags: ['User'],
         }),
-        getRoomById: builder.query({
-            query:(id) =>({
-                url:`rooms/${id}`,
-            })
-        }),
-        addRoom :builder.mutation({
-            query:(body,homeId) =>({
-                url:`/rooms?homeId=${homeId}`,
+        postUser: builder.mutation({
+            query:(body) =>({
+                url:'account',
                 method:"POST",
-                body:body,
-            })
+            }),
+            providesTags: ['User'],
         })
     }),
-    reducerPath: "room",
+    reducerPath: "user",
 });
-
-export const {useGetRoomsQuery,useGetRoomByIdQuery,useAddRoomMutation} = roomApi;
+export const {useGetUserQuery,usePostUserMutation} = userApi;

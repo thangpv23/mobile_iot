@@ -1,9 +1,13 @@
 import React from "react";
-import {Text,View, StyleSheet} from "react-native";
+import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
 import {Icon} from 'react-native-elements';
 
 
 export default (props) => {
+    // const openRoomList = () =>{
+    //     console.log("touch");
+    //     props.navigation.navigate("Room",{homeID:props.homeId});
+    // };
     return (
         <View >
             <View  style={styles.container}>

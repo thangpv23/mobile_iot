@@ -17,7 +17,6 @@ export default ({navigation}) => {
     };
     const [inputState, setInputState] = useState(initState);
     const [addHome] = useAddHomeMutation();
-    const role = useSelector(state => state.loginInfo.role);
     const toggleOverlay = () => {
         setVisible(!visible);
     };
@@ -29,24 +28,21 @@ export default ({navigation}) => {
     }
     const handleAddHome = async () => {
         try {
-            console.log("a");
             console.log(inputState)
             if(inputState.name &&inputState.location){
-                console.log("ab");
                 await addHome(inputState).unwrap();
-                setVisible(false);
+                toggleOverlay();
             }
-
         } catch (e) {
             console.log(e)
         }
     };
-    const openRoomList = () =>{
-        navigation.navigate("Room");
+    const openRoomList = (homeId,homeName) =>{
+        navigation.navigate("Room",{homeId:homeId, homeName: homeName});
     };
     return (
         <ScrollView>
-            <Header title={""}/>
+            <Header title={""} back={false} navigation={navigation}/>
             <Text style={styles.text}>
                 Username
             </Text>
@@ -54,10 +50,9 @@ export default ({navigation}) => {
                 <View style={styles.main}>
                     {
                         data?.map(home => {
-                            console.log(home);
                             return (
-                                <TouchableOpacity  style={styles.item} onPress={openRoomList}>
-                                    <HouseButton name={home.name} />
+                                <TouchableOpacity  key={home._id} style={styles.item}  onPress={() => openRoomList(home._id,home.name)}>
+                                    <HouseButton name={home.name} homeId={home._id} />
                                 </TouchableOpacity >
                             )
                         })

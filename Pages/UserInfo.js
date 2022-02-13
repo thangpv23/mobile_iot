@@ -1,10 +1,30 @@
-import React from 'react';
-import {StyleSheet, Text, TextInput, View} from "react-native";
+import React, {useState} from 'react';
+import {ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
 import Header from '../AppHeader';
+import {useGetUserQuery} from "../services/user/user";
+import {Button} from "react-native-elements";
+
 export default () => {
 
+    const {data} = useGetUserQuery();
+    const initState = {
+        firstName: "",
+        lastName:"",
+    }
+    const [inputState, setInputState] = useState(initState);
+    const handleInput = (type, value) => {
+        setInputState({
+            ...inputState,
+            [type]: value,
+        })
+    }
+
+    const handleSubmit = () => {
+        console.log("change user info")
+    };
+
     return (
-        <View>
+        <ScrollView>
             <Header title={""}/>
             <View>
                 <Text style={styles.textName}>
@@ -14,10 +34,34 @@ export default () => {
                 <View style={styles.info}>
                     <View>
                         <Text style={styles.text}>
+                            First Name
+                        </Text>
+                        <TextInput style={styles.inputText}
+                                   placeholder="firstName"
+                                   defaultValue={data?.firstName}
+                                   onChangeText={(value) =>handleInput("firstName",value)}
+                                   errorStyle={{color: "red"}}
+                                   errorMessage="Not a valid"
+                        />
+
+                        <Text style={styles.text}>
+                            Last Name
+                        </Text>
+                        <TextInput style={styles.inputText}
+                                   placeholder="lastName"
+                                   onChangeText={(value) =>handleInput("lastName",value)}
+                                   defaultValue={data?.lastName}
+                                   errorStyle={{color: "red"}}
+                                   errorMessage="Not a valid"
+                        />
+
+                        <Text style={styles.text}>
                             Email
                         </Text>
                         <TextInput style={styles.inputText}
                                    placeholder="Email"
+                                   value={data?.email}
+                                   editable={false}
                                    errorStyle={{color: "red"}}
                                    errorMessage="Not a valid"
                         />
@@ -27,25 +71,18 @@ export default () => {
                         </Text>
                         <TextInput style={styles.inputText}
                                    placeholder="Username"
+                                   editable={false}
+                                   value={data?.login}
                                    errorStyle={{color: "red"}}
                                    errorMessage="Not a valid"
                         />
-                        <Text style={styles.text}>
-                            Password
-                        </Text>
-                        <TextInput style={styles.inputText}
-                                   placeholder="Password"
-                                   errorStyle={{color: "red"}}
-                                   errorMessage="Not a valid"
-                        />
-
                     </View>
                 </View>
 
 
             </View>
 
-        </View>
+        </ScrollView>
     );
 
 };
@@ -75,7 +112,7 @@ const styles = StyleSheet.create({
     },
 
     info: {
-        paddingTop: 100,
+        paddingTop: 20,
         justifyContent: "center",
         alignItems: "center",
 

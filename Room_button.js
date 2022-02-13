@@ -14,7 +14,7 @@ export default (props) => {
                 </Icon>
             </View>
             <Text style={styles.text}>
-                Room 1
+                {props.name}
             </Text>
         </View>
 

@@ -16,14 +16,27 @@ import {color} from "react-native-elements/dist/helpers";
 //     };
 // };
 
-const AppHeader = () => {
+const AppHeader = (props) => {
 
     const [toggle, setToggle] = useState(false);
     const [color,setColor] = useState("red");
 
     const handleToggle = () => {
         setToggle(prev => !prev)
-        console.log("test")
+    };
+    const backOption = (typeof props.back !== 'undefined') ? props.back :true ;
+
+    const handleBack = () => {
+        console.log("back");
+        props.navigation.goBack();
+    };
+
+    const openUserInfo = () => {
+        props.navigation.navigate("User_info");
+    };
+
+    const openChangePassword = () => {
+
     };
 
     return (
@@ -31,11 +44,16 @@ const AppHeader = () => {
             <StatusBar barStyle="light-content" hidden={false} backgroundColor="#B5F7D3" translucent={true}/>
             <Header backgroundColor='#FD9A3F'
                     leftComponent={
-                        <TouchableOpacity onPress={{}}>
-                            <Icon name='chevron-left'
-                                  type='font-awesome'
-                                  color='#fff'>
-                            </Icon>
+                        <TouchableOpacity >
+                            {
+                                backOption ?
+                                    <Icon name='chevron-left'
+                                          onPress={handleBack}
+                                          type='font-awesome'
+                                          color='#fff'>
+                                    </Icon>:null
+                            }
+
                         </TouchableOpacity>
                     }
                     rightComponent={
@@ -48,8 +66,11 @@ const AppHeader = () => {
                                      onBackdropPress={handleToggle}
                                      backdropStyle={styles.backdrop}
                             >
-                                <TouchableOpacity style={styles.button}>
-                                    <Text style={{fontSize:20}}>User info</Text>
+                                <TouchableOpacity style={styles.button} >
+                                    <Text onPress= {openUserInfo} style={{fontSize:20}}>User info</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.button} >
+                                    <Text onPress= {openChangePassword} style={{fontSize:20}}>Change Password</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.button}>
                                     <Text style={{fontSize:20}}>Log out</Text>

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useReducer, useState} from "react";
 import {ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import Header from "../AppHeader";
 import AddButton from "../Components/Button/AddButton";
@@ -40,22 +40,19 @@ export default ({navigation}) => {
             if (inputState.name && inputState.location) {
                 console.log("ab");
                 await addHome(inputState).unwrap();
-                setVisible(false);
+                toggleOverlay();
             }
 
         } catch (e) {
             console.log(e)
         }
     };
-    const openRoomList = () => {
-        navigation.navigate("Room");
+    const openRoomList = (homeId,homeName) =>{
+        navigation.navigate("Room",{homeId:homeId, homeName: homeName});
     };
-    const handleLongPressButton = () => {
-        toggleDeleteOverlay();
-    }
     return (
         <ScrollView>
-            <Header title={""}/>
+            <Header title={""} back={false} navigation={navigation}/>
             <Text style={styles.text}>
                 Username
             </Text>
@@ -63,11 +60,10 @@ export default ({navigation}) => {
                 <View style={styles.main}>
                     {
                         data?.map(home => {
-                            console.log(home);
                             return (
-                                <TouchableOpacity style={styles.item} onPress={openRoomList}>
-                                    <HouseButton name={home.name}/>
-                                </TouchableOpacity>
+                                <TouchableOpacity  key={home._id} style={styles.item}  onPress={() => openRoomList(home._id,home.name)}>
+                                    <HouseButton name={home.name} homeId={home._id} />
+                                </TouchableOpacity >
                             )
                         })
                     }

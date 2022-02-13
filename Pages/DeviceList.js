@@ -25,7 +25,6 @@ export default ({navigation}) => {
         {key: index++, label: 'Device 1'},
         {key: index++, label: 'Device 2'},
         {key: index++, label: 'Device 3'},
-
     ];
     return (
         <View>
@@ -36,7 +35,6 @@ export default ({navigation}) => {
                 Username > Home 1 > Room 1
             </Text>
             <View style={styles.container}>
-
 
                 <View style={styles.main}>
                     <View style={styles.item}>

@@ -5,7 +5,6 @@ import {Icon} from 'react-native-elements';
 export default (props) => {
     return (
         <View>
-
             <View style={styles.container}>
                 <Icon name='devices'
                       type='material-community'

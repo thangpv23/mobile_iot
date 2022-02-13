@@ -1,14 +1,23 @@
 import React, {useState} from "react";
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import Header from "../AppHeader";
 import AddButton from "../Components/Button/AddButton";
 import Room_button from "../Room_button";
 import {Button, Icon, Overlay} from "react-native-elements";
+import {useAddRoomMutation, useGetRoomsQuery} from "../services/room/room";
 
-type OverlayComponentProps = {};
+export default ({route,navigation}) => {
 
-export default ({navigation}) => {
+    const [inputState,setInputState] = useState({
+        name:"",
+    });
+
     const [visible, setVisible] = useState(false);
+    const {homeId,homeName} = route.params;
+
+    const {data} = useGetRoomsQuery(homeId);
+    const [addRoom] = useAddRoomMutation();
+
     const [deleteVisible, setDeleteVisible] = useState(false);
     const toggleDeleteOverlay = () => {
         setDeleteVisible(!deleteVisible);
@@ -20,23 +29,45 @@ export default ({navigation}) => {
         toggleDeleteOverlay();
     }
 
-    return (
-        <View>
+    const handleAddRoom =  async () =>{
+        try{
+            if(inputState.name){
+                const body = inputState;
+                await addRoom({body,homeId}).unwrap();
+                toggleOverlay();
+            }
+        }catch (err){
+            console.log(err);
+        }
+    }
 
+    const handleInput = (type, value) => {
+        setInputState({
+            ...inputState,
+            [type]: value,
+        })
+    };
+    const openDeviceList = () =>{
+        console.log("device");
+        // navigation.navigate("Device");
+    }
+    return (
+        <ScrollView>
+            <Header title={""} navigation={navigation}/>
             <Text style={styles.text}>
-                Username > Home 1
+                Username > {homeName}
             </Text>
             <View style={styles.container}>
                 <View style={styles.main}>
-                    <View style={styles.item}>
-                        <Room_button/>
-                    </View>
-                    <View style={styles.item}>
-                        <Room_button/>
-                    </View>
-                    <View style={styles.item}>
-                        <Room_button/>
-                    </View>
+                    {
+                        data?.map(room =>{
+                            return(
+                                <TouchableOpacity key={room._id} style={styles.item} onPress={() => openDeviceList(room._id)}>
+                                    <Room_button  name={room.name}/>
+                                </TouchableOpacity>
+                            )
+                        })
+                    }
                     <TouchableOpacity style={styles.item} onPress={toggleOverlay}>
                         <AddButton/>
                     </TouchableOpacity>
@@ -45,10 +76,11 @@ export default ({navigation}) => {
                             <View style={styles.form}>
                                 <View style={styles.form}>
                                     <Text style={styles.textName}>
-                                        Add House
+                                        Add Room
                                     </Text>
                                     <TextInput style={styles.inputText}
                                                placeholder="Room name"
+                                               onChangeText={(value) =>handleInput("name",value)}
                                     />
 
                                     <View style={{
@@ -76,11 +108,7 @@ export default ({navigation}) => {
                                                 />
                                             }
                                             title="Add"
-                                            onPress={() => {
-                                                navigation.navigate("Device");
-                                                toggleOverlay()
-                                            }}
-
+                                            onPress={handleAddRoom}
                                         />
 
                                     </View>
@@ -130,7 +158,7 @@ export default ({navigation}) => {
 
                 </View>
             </View>
-        </View>
+        </ScrollView>
 
 
     )

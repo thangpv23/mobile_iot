@@ -11,6 +11,7 @@ import Signup from "./Pages/Auth/SignUp";
 import SignIn from "./Pages/Auth/SignIn";
 import { Provider } from 'react-redux';
 import {store} from "./services/store";
+import DeviceDetail from "./Pages/DeviceDetail";
 
 
 const Stack = createNativeStackNavigator();
@@ -20,12 +21,13 @@ const MyStack = () => (
             screenOptions={{
                 headerShown: false
             }}>
-            <Stack.Screen name="Log In" component={SignIn}/>
-            <Stack.Screen name="Sign Up" component={Signup}/>
-            <Stack.Screen name="User_info" component={UserInfo}/>
-            <Stack.Screen name="Home" component={HomeList}/>
-            <Stack.Screen name="Room" component={RoomList}/>
-            <Stack.Screen name="Device" component={DeviceList}/>
+            {/*<Stack.Screen name="Log In" component={SignIn}/>*/}
+            {/*<Stack.Screen name="Sign Up" component={Signup}/>*/}
+            {/*<Stack.Screen name="User_info" component={UserInfo}/>*/}
+            {/*<Stack.Screen name="Home" component={HomeList}/>*/}
+            {/*<Stack.Screen name="Room" component={RoomList}/>*/}
+            {/*<Stack.Screen name="Device" component={DeviceList}/>*/}
+            <Stack.Screen name="DeviceDetail" component={DeviceDetail}/>
         </Stack.Navigator>
     </MenuProvider>
 );

@@ -9,10 +9,17 @@ type OverlayComponentProps = {};
 
 export default ({navigation}) => {
     const [visible, setVisible] = useState(false);
-
+    const [deleteVisible, setDeleteVisible] = useState(false);
+    const toggleDeleteOverlay = () => {
+        setDeleteVisible(!deleteVisible);
+    };
     const toggleOverlay = () => {
         setVisible(!visible);
     };
+    const handleLongPressButton = () => {
+        toggleDeleteOverlay();
+    }
+
     return (
         <View>
 
@@ -81,6 +88,44 @@ export default ({navigation}) => {
                             </View>
                         </View>
                     </Overlay>
+                    <Overlay isVisible={deleteVisible} onBackdropPress={toggleDeleteOverlay}>
+                        <View style={styles.containerOverlay}>
+                            <Text style={styles.textName}>Delete Device?</Text>
+                            <View style={{
+                                flexDirection: "row",
+                            }}>
+                                <Button
+                                    title="Delete"
+                                    containerStyle={{
+                                        flex: 1,
+                                        height: 40,
+                                        width: 100,
+                                        marginHorizontal: 20,
+                                        marginVertical: 20,
+                                    }}
+                                    buttonStyle={{
+                                        backgroundColor: '#FD9A3F',
+                                        borderRadius: 100 / 2
+                                    }}
+                                    titleStyle={{
+                                        color: 'white',
+                                        marginHorizontal: 20,
+                                    }}
+                                />
+                                <Button
+                                    containerStyle={{
+                                        flex: 1,
+                                        width: 100,
+                                        marginHorizontal: 20,
+                                        marginVertical: 20,
+                                    }}
+                                    title="Cancel"
+                                    type="clear"
+                                    titleStyle={{color: '#FD9A3F'}}
+                                />
+                            </View>
+                        </View>
+                    </Overlay>
 
 
                 </View>
@@ -144,5 +189,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 100 / 50
-    }
+    },
+    containerOverlay: {
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 100 / 5,
+        maxWidth: 300
+
+    },
 })

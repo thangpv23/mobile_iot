@@ -1,10 +1,11 @@
 import React, {useState} from "react";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Switch, Text, TextInput, TouchableOpacity, View} from "react-native";
 import AppHeader from "../AppHeader";
-import Add_button from "../Components/Button/AddButton";
-import DeviceButton from "../Components/Button/DeviceButton";
+
 import {Button, Icon, Overlay} from "react-native-elements";
 import ModalSelector from 'react-native-modal-selector'
+import DeviceControler from "../Components/Button/DeviceControler";
+
 
 export default ({navigation}) => {
     const [visible, setVisible] = useState(false);
@@ -12,6 +13,8 @@ export default ({navigation}) => {
     const toggleDeleteOverlay = () => {
         setDeleteVisible(!deleteVisible);
     };
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const toggleOverlay = () => {
         setVisible(!visible);
     };
@@ -40,29 +43,74 @@ export default ({navigation}) => {
 
                 <View style={styles.main}>
                     <View style={styles.item}>
-                        <DeviceButton/>
+                        <DeviceControler/>
                     </View>
-                    <View style={styles.item} >
-                        <DeviceButton/>
+
+                    <View style={styles.switch} onPress={toggleOverlay}>
+                        <Text style={styles.text}>
+                            {/*Off*/}
+                            Lock
+                        </Text>
+                        <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={isEnabled ? "#FD9A3F" : "#f4f3f4"}
+                            onValueChange={toggleSwitch}
+                            value={isEnabled}
+                        />
+                        <Text style={styles.text}>
+                            {/*On*/}
+                            Open
+                        </Text>
                     </View>
-                    <View style={styles.item}>
-                        <DeviceButton/>
+                    <View style={{
+                        flexDirection: "row",
+                        maxWidth: 300
+                    }}>
+                        <Button
+                            title="Rename"
+                            containerStyle={{
+                                flex: 1,
+                                height: 40,
+                                width: 100,
+                                marginHorizontal: 5,
+                                marginVertical: 20,
+                            }}
+                            buttonStyle={{
+                                backgroundColor: '#FD9A3F',
+                                borderRadius: 100 / 2
+                            }}
+                            titleStyle={{
+                                color: 'white',
+                                marginHorizontal: 20,
+                            }}
+                            onPress={toggleOverlay}
+
+
+                        />
+                        <Button
+                            containerStyle={{
+                                flex: 1,
+                                width: 100,
+                                marginHorizontal: 5,
+                                marginVertical: 20,
+                            }}
+                            title="Delete"
+                            type="clear"
+                            titleStyle={{color: '#FD9A3F'}}
+                            onPress={toggleDeleteOverlay}
+
+                        />
                     </View>
-                    <TouchableOpacity style={styles.item} onPress={toggleOverlay}>
-                        <Add_button/>
-                    </TouchableOpacity>
                     <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
                         <View style={styles.form}>
                             <Text style={styles.textName}>
-                                Add Device
+                                Rename Device
                             </Text>
-                            <ModalSelector
-                                style={{padding: 20}}
-                                data={data}
-                                initValue="Select Device"
-                                onChange={(option) => {
-                                    alert(`Selected ${option.label} (${option.key})`)
-                                }}/>
+                            <TextInput style={styles.inputText}
+                                       // onChangeText={(value) => handleInput("username", value)}
+                                       placeholder="Device name"
+
+                            />
                             <View style={{
                                 flexDirection: "row",
                                 alignContent: 'center',
@@ -75,19 +123,12 @@ export default ({navigation}) => {
                                     buttonStyle={{
                                         backgroundColor: 'rgba(253, 154, 63, 1)',
                                         borderRadius: 30,
-                                        width:"100%"
+                                        width:"100%",
                                     }}
                                     borderRadius={100 / 50}
-                                    icon={
-                                        <Icon
-                                            name="plus"
-                                            type="font-awesome"
-                                            color="white"
-                                            size={25}
-                                            iconStyle={{marginRight: 10}}
-                                        />
-                                    }
-                                    title="Add"
+
+                                    title="Done"
+
                                     onPress={() => {
                                         navigation.navigate("Device");
                                         toggleOverlay()
@@ -119,6 +160,7 @@ export default ({navigation}) => {
                                         color: 'white',
                                         marginHorizontal: 20,
                                     }}
+                                    onPress={toggleDeleteOverlay}
                                 />
                                 <Button
                                     containerStyle={{
@@ -130,6 +172,7 @@ export default ({navigation}) => {
                                     title="Cancel"
                                     type="clear"
                                     titleStyle={{color: '#FD9A3F'}}
+                                    onPress={toggleDeleteOverlay}
                                 />
                             </View>
                         </View>
@@ -146,9 +189,7 @@ export default ({navigation}) => {
 };
 const styles = StyleSheet.create({
     container: {
-
-        flexDirection: "row",
-        flexWrap: "wrap",
+        paddingTop: 30,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 100 / 5
@@ -156,14 +197,12 @@ const styles = StyleSheet.create({
     },
     main: {
         width: 500,
-        flexDirection: "row",
-        flexWrap: "wrap",
         alignItems: 'center',
         justifyContent: 'center',
 
     },
     item: {
-        padding: 50,
+        paddingTop: 10,
     },
     text: {
         fontSize: 20,
@@ -174,7 +213,7 @@ const styles = StyleSheet.create({
     inputText: {
         borderColor: "black",
         backgroundColor: "#FFFFFF",
-        width: 300,
+        width: 200,
         borderWidth: 0,
         borderStyle: "solid",
         fontSize: 15,
@@ -208,4 +247,9 @@ const styles = StyleSheet.create({
         maxWidth: 300
 
     },
+    switch: {
+
+        flexDirection:"row",
+        padding: 30,
+    }
 })

@@ -1,4 +1,4 @@
-import React, {useReducer, useState} from "react";
+import React, {useState} from "react";
 import {ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import Header from "../AppHeader";
 import AddButton from "../Components/Button/AddButton";
@@ -10,6 +10,7 @@ import {useSelector} from "react-redux";
 
 export default ({navigation}) => {
     const [visible, setVisible] = useState(false);
+
     const {data} = useGetHomesQuery();
     const initState = {
         name: "",
@@ -17,10 +18,15 @@ export default ({navigation}) => {
     };
     const [inputState, setInputState] = useState(initState);
     const [addHome] = useAddHomeMutation();
+    const [deleteVisible, setDeleteVisible] = useState(false);
+    const toggleDeleteOverlay = () => {
+        setDeleteVisible(!deleteVisible);
+    };
     const role = useSelector(state => state.loginInfo.role);
     const toggleOverlay = () => {
         setVisible(!visible);
     };
+
     const handleInput = (type, value) => {
         setInputState({
             ...inputState,
@@ -31,7 +37,7 @@ export default ({navigation}) => {
         try {
             console.log("a");
             console.log(inputState)
-            if(inputState.name &&inputState.location){
+            if (inputState.name && inputState.location) {
                 console.log("ab");
                 await addHome(inputState).unwrap();
                 setVisible(false);
@@ -41,9 +47,12 @@ export default ({navigation}) => {
             console.log(e)
         }
     };
-    const openRoomList = () =>{
+    const openRoomList = () => {
         navigation.navigate("Room");
     };
+    const handleLongPressButton = () => {
+        toggleDeleteOverlay();
+    }
     return (
         <ScrollView>
             <Header title={""}/>
@@ -56,12 +65,16 @@ export default ({navigation}) => {
                         data?.map(home => {
                             console.log(home);
                             return (
-                                <TouchableOpacity  style={styles.item} onPress={openRoomList}>
-                                    <HouseButton name={home.name} />
-                                </TouchableOpacity >
+                                <TouchableOpacity style={styles.item} onPress={openRoomList}>
+                                    <HouseButton name={home.name}/>
+                                </TouchableOpacity>
                             )
                         })
                     }
+                    <TouchableOpacity style={styles.item} onLongPress={() => handleLongPressButton()}>
+                        <HouseButton name={'tét'}/>
+                    </TouchableOpacity>
+
                     <TouchableOpacity style={styles.item} onPress={toggleOverlay}>
                         <AddButton/>
                     </TouchableOpacity>
@@ -104,6 +117,44 @@ export default ({navigation}) => {
                                     }
                                     title="Add"
                                     onPress={handleAddHome}
+                                />
+                            </View>
+                        </View>
+                    </Overlay>
+                    <Overlay isVisible={deleteVisible} onBackdropPress={toggleDeleteOverlay}>
+                        <View style={styles.containerOverlay}>
+                            <Text style={styles.textName}>Delete Home?</Text>
+                            <View style={{
+                                flexDirection: "row",
+                            }}>
+                                <Button
+                                    title="Delete"
+                                    containerStyle={{
+                                        flex: 1,
+                                        height: 40,
+                                        width: 100,
+                                        marginHorizontal: 20,
+                                        marginVertical: 20,
+                                    }}
+                                    buttonStyle={{
+                                        backgroundColor: '#FD9A3F',
+                                        borderRadius: 100 / 2
+                                    }}
+                                    titleStyle={{
+                                        color: 'white',
+                                        marginHorizontal: 20,
+                                    }}
+                                />
+                                <Button
+                                    containerStyle={{
+                                        flex: 1,
+                                        width: 100,
+                                        marginHorizontal: 20,
+                                        marginVertical: 20,
+                                    }}
+                                    title="Cancel"
+                                    type="clear"
+                                    titleStyle={{color: '#FD9A3F'}}
                                 />
                             </View>
                         </View>
@@ -167,5 +218,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 100 / 50
-    }
+    },
+    containerOverlay: {
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 100 / 5,
+        maxWidth: 300
+
+    },
 })

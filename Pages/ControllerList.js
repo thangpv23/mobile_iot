@@ -28,8 +28,7 @@ export default ({navigation}) => {
     ];
     return (
         <View>
-            <AppHeader title={""}>
-
+            <AppHeader title={""} navigation={navigation}>
             </AppHeader>
             <Text style={styles.text}>
                 Username > Home 1 > Room 1

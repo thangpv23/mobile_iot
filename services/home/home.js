@@ -36,8 +36,15 @@ export const homeApi = createApi({
                 body:body,
             }),
             invalidatesTags: ['Home'],
+        }),
+        deleteHome: builder.mutation({
+            query:(id) =>({
+                url:`homes/${id}`,
+                method:"DELETE",
+            }),
+            invalidatesTags: ['Home'],
         })
     }),
     reducerPath: "home",
 });
-export const {useGetHomesQuery,useGetHomeByIdQuery,useAddHomeMutation} = homeApi;
+export const {useGetHomesQuery,useGetHomeByIdQuery,useAddHomeMutation,useDeleteHomeMutation} = homeApi;

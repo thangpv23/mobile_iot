@@ -16,6 +16,7 @@ export default ({route,navigation}) => {
     const {homeId,homeName} = route.params;
 
     const {data} = useGetRoomsQuery(homeId);
+    console.log(data);
     const [addRoom] = useAddRoomMutation();
 
     const [deleteVisible, setDeleteVisible] = useState(false);
@@ -49,7 +50,7 @@ export default ({route,navigation}) => {
     };
     const openDeviceList = () =>{
         console.log("device");
-        // navigation.navigate("Device");
+        navigation.navigate("Controller");
     }
     return (
         <ScrollView>
@@ -61,8 +62,9 @@ export default ({route,navigation}) => {
                 <View style={styles.main}>
                     {
                         data?.map(room =>{
+                            console.log(room);
                             return(
-                                <TouchableOpacity key={room._id} style={styles.item} onPress={() => openDeviceList(room._id)}>
+                                <TouchableOpacity key={room.id} style={styles.item} onPress={() => openDeviceList(room.id)}>
                                     <Room_button  name={room.name}/>
                                 </TouchableOpacity>
                             )

@@ -34,6 +34,13 @@ export const roomApi = createApi({
                 body:body,
             }),
             invalidatesTags: ['Room'],
+        }),
+        deleteRoom:builder.mutation({
+            query:(id) =>({
+                url:`rooms/${id}`,
+                method:"DELETE",
+            }),
+            invalidatesTags: ['Room'],
         })
     }),
     reducerPath: "room",

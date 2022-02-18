@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from "@react-navigation/native";
 import {MenuProvider} from 'react-native-popup-menu';
-import DeviceList from "./Pages/DeviceList";
+import ControllerList from "./Pages/ControllerList";
 import RoomList from "./Pages/RoomList";
 import HomeList from "./Pages/HomeList";
 import UserInfo from "./Pages/UserInfo";
@@ -29,7 +29,7 @@ const MyStack = () => {
                             <Stack.Screen name="Home" component={HomeList}/>
                             <Stack.Screen name="User_info" component={UserInfo}/>
                             <Stack.Screen name="Room" component={RoomList}/>
-                            <Stack.Screen name="Device" component={DeviceList}/>
+                            <Stack.Screen name="Controller" component={ControllerList}/>
                         </>
                     ) : (
                         <>

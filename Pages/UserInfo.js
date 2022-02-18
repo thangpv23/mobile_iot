@@ -1,17 +1,18 @@
 import React, {useState} from 'react';
-import {ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
+import {Button, ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
 import Header from '../AppHeader';
-import {useGetUserQuery} from "../services/user/user";
-import {Button} from "react-native-elements";
+import {useGetUserQuery, usePostUserMutation} from "../services/user/user";
 
 export default () => {
 
     const {data} = useGetUserQuery();
     const initState = {
         firstName: "",
-        lastName:"",
+        lastName: "",
     }
     const [inputState, setInputState] = useState(initState);
+    const [postUser] = usePostUserMutation();
+
     const handleInput = (type, value) => {
         setInputState({
             ...inputState,
@@ -19,8 +20,8 @@ export default () => {
         })
     }
 
-    const handleSubmit = () => {
-        console.log("change user info")
+    const handleSubmit = async () => {
+        await postUser(initState).unwrap();
     };
 
     return (
@@ -39,7 +40,7 @@ export default () => {
                         <TextInput style={styles.inputText}
                                    placeholder="firstName"
                                    defaultValue={data?.firstName}
-                                   onChangeText={(value) =>handleInput("firstName",value)}
+                                   onChangeText={(value) => handleInput("firstName", value)}
                                    errorStyle={{color: "red"}}
                                    errorMessage="Not a valid"
                         />
@@ -49,7 +50,7 @@ export default () => {
                         </Text>
                         <TextInput style={styles.inputText}
                                    placeholder="lastName"
-                                   onChangeText={(value) =>handleInput("lastName",value)}
+                                   onChangeText={(value) => handleInput("lastName", value)}
                                    defaultValue={data?.lastName}
                                    errorStyle={{color: "red"}}
                                    errorMessage="Not a valid"
@@ -76,10 +77,11 @@ export default () => {
                                    errorStyle={{color: "red"}}
                                    errorMessage="Not a valid"
                         />
+                        <View>
+                            <Button title="Save" color="#FD9A3F" onPress={handleSubmit}/>
+                        </View>
                     </View>
                 </View>
-
-
             </View>
 
         </ScrollView>
@@ -146,4 +148,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    buttonSave: {
+        marginLeft: '40px',
+        marginRight: '40px',
+    }
 });

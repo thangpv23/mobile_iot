@@ -4,7 +4,7 @@ import Header from "../AppHeader";
 import AddButton from "../Components/Button/AddButton";
 import HouseButton from "../Components/Button/HouseButton";
 import {Button, Icon, Overlay} from "react-native-elements";
-import {useAddHomeMutation, useGetHomesQuery} from "../services/home/home";
+import {useAddHomeMutation, useDeleteHomeMutation, useGetHomesQuery} from "../services/home/home";
 import {useSelector} from "react-redux";
 
 
@@ -12,13 +12,16 @@ export default ({navigation}) => {
     const [visible, setVisible] = useState(false);
 
     const {data} = useGetHomesQuery();
+    console.log(data)
     const initState = {
         name: "",
         location: "",
     };
     const [inputState, setInputState] = useState(initState);
     const [addHome] = useAddHomeMutation();
+    const [deleteHome] = useDeleteHomeMutation();
     const [deleteVisible, setDeleteVisible] = useState(false);
+    const [homeId,setHomeId] = useState("");
     const toggleDeleteOverlay = () => {
         setDeleteVisible(!deleteVisible);
     };
@@ -35,8 +38,6 @@ export default ({navigation}) => {
     }
     const handleAddHome = async () => {
         try {
-            console.log("a");
-            console.log(inputState)
             if (inputState.name && inputState.location) {
                 console.log("ab");
                 await addHome(inputState).unwrap();
@@ -50,6 +51,20 @@ export default ({navigation}) => {
     const openRoomList = (homeId,homeName) =>{
         navigation.navigate("Room",{homeId:homeId, homeName: homeName});
     };
+    const handleLongPressButton = (id) => {
+        toggleDeleteOverlay();
+        setHomeId(id)
+    }
+    console.log(homeId)
+    const handleDeleteHome =  async () => {
+        try {
+            await deleteHome(homeId).unwrap();
+            toggleDeleteOverlay();
+        }catch (e) {
+            console.log(e)
+        }
+    };
+
     return (
         <ScrollView>
             <Header title={""} back={false} navigation={navigation}/>
@@ -61,15 +76,14 @@ export default ({navigation}) => {
                     {
                         data?.map(home => {
                             return (
-                                <TouchableOpacity  key={home._id} style={styles.item}  onPress={() => openRoomList(home._id,home.name)}>
-                                    <HouseButton name={home.name} homeId={home._id} />
+                                <TouchableOpacity  key={home.id} style={styles.item}
+                                                   onLongPress={() =>handleLongPressButton(home.id)}
+                                                   onPress={() => openRoomList(home.id,home.name)}>
+                                    <HouseButton name={home.name} homeId={home.id} />
                                 </TouchableOpacity >
                             )
                         })
                     }
-                    <TouchableOpacity style={styles.item} onLongPress={() => handleLongPressButton()}>
-                        <HouseButton name={'tét'}/>
-                    </TouchableOpacity>
 
                     <TouchableOpacity style={styles.item} onPress={toggleOverlay}>
                         <AddButton/>
@@ -136,6 +150,7 @@ export default ({navigation}) => {
                                         backgroundColor: '#FD9A3F',
                                         borderRadius: 100 / 2
                                     }}
+                                    onPress={() =>handleDeleteHome()}
                                     titleStyle={{
                                         color: 'white',
                                         marginHorizontal: 20,
@@ -150,6 +165,7 @@ export default ({navigation}) => {
                                     }}
                                     title="Cancel"
                                     type="clear"
+                                    onPress={toggleDeleteOverlay}
                                     titleStyle={{color: '#FD9A3F'}}
                                 />
                             </View>

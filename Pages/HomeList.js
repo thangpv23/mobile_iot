@@ -39,7 +39,6 @@ export default ({navigation}) => {
     const handleAddHome = async () => {
         try {
             if (inputState.name && inputState.location) {
-                console.log("ab");
                 await addHome(inputState).unwrap();
                 toggleOverlay();
             }

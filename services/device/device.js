@@ -7,7 +7,7 @@ export const deviceApi = createApi({
             const token = getState().loginInfo.token;
             // If we have a token set in state, let's assume that we should be passing it.
             if (token) {
-                headers.set('authorization', Bearer ${token})
+                headers.set('authorization', `Bearer ${token}`)
             }
             return headers
         },

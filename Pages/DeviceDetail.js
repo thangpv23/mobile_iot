@@ -1,15 +1,31 @@
 import React, {useState} from "react";
 import {StyleSheet, Switch, Text, TextInput, TouchableOpacity, View} from "react-native";
 import AppHeader from "../AppHeader";
-
 import {Button, Icon, Overlay} from "react-native-elements";
 import ModalSelector from 'react-native-modal-selector'
-import DeviceControler from "../Components/Button/DeviceControler";
+import DeviceController from "../Components/Button/DeviceController";
 
+import {
+    useAddDeviceMutation,
+    useDeleteDeviceMutation,
+    useGetDevicesQuery,
+    usePutDeviceMutation
+} from "../services/device/device";
 
 export default ({navigation}) => {
+
+
+
+    const initState = {
+        status: "",
+    };
+
+    const [deviceState, setDeviceState] = useState(initState);
+    const [putDevice] = usePutDeviceMutation();
     const [visible, setVisible] = useState(false);
     const [deleteVisible, setDeleteVisible] = useState(false);
+
+
     const toggleDeleteOverlay = () => {
         setDeleteVisible(!deleteVisible);
     };
@@ -20,7 +36,21 @@ export default ({navigation}) => {
     };
     const handleLongPressButton = () => {
         toggleDeleteOverlay();
-    }
+    };
+
+
+    const handleUsePutDeviceMutation = async () => {
+        try {
+            toggleSwitch();
+            console.log("status");
+            await putDevice(deviceId).unwrap();
+
+
+        } catch (e) {
+            console.log(e)
+        }
+    };
+
 
     let index = 0;
     const data = [
@@ -43,7 +73,7 @@ export default ({navigation}) => {
 
                 <View style={styles.main}>
                     <View style={styles.item}>
-                        <DeviceControler/>
+                        <DeviceController/>
                     </View>
 
                     <View style={styles.switch} onPress={toggleOverlay}>
@@ -54,129 +84,15 @@ export default ({navigation}) => {
                         <Switch
                             trackColor={{ false: "#767577", true: "#81b0ff" }}
                             thumbColor={isEnabled ? "#FD9A3F" : "#f4f3f4"}
-                            onValueChange={toggleSwitch}
+                            onValueChange={handleUsePutDeviceMutation}
                             value={isEnabled}
+                            style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
                         />
                         <Text style={styles.text}>
                             {/*On*/}
                             Open
                         </Text>
                     </View>
-                    <View style={{
-                        flexDirection: "row",
-                        maxWidth: 300
-                    }}>
-                        <Button
-                            title="Rename"
-                            containerStyle={{
-                                flex: 1,
-                                height: 40,
-                                width: 100,
-                                marginHorizontal: 5,
-                                marginVertical: 20,
-                            }}
-                            buttonStyle={{
-                                backgroundColor: '#FD9A3F',
-                                borderRadius: 100 / 2
-                            }}
-                            titleStyle={{
-                                color: 'white',
-                                marginHorizontal: 20,
-                            }}
-                            onPress={toggleOverlay}
-
-
-                        />
-                        <Button
-                            containerStyle={{
-                                flex: 1,
-                                width: 100,
-                                marginHorizontal: 5,
-                                marginVertical: 20,
-                            }}
-                            title="Delete"
-                            type="clear"
-                            titleStyle={{color: '#FD9A3F'}}
-                            onPress={toggleDeleteOverlay}
-
-                        />
-                    </View>
-                    <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
-                        <View style={styles.form}>
-                            <Text style={styles.textName}>
-                                Rename Device
-                            </Text>
-                            <TextInput style={styles.inputText}
-                                       // onChangeText={(value) => handleInput("username", value)}
-                                       placeholder="Device name"
-
-                            />
-                            <View style={{
-                                flexDirection: "row",
-                                alignContent: 'center',
-                                alignItems: 'center',
-                                backgroundColor: '#FD9A3F',
-                                borderRadius: 100 / 50
-                            }}
-                            >
-                                <Button
-                                    buttonStyle={{
-                                        backgroundColor: 'rgba(253, 154, 63, 1)',
-                                        borderRadius: 30,
-                                        width:"100%",
-                                    }}
-                                    borderRadius={100 / 50}
-
-                                    title="Done"
-
-                                    onPress={() => {
-                                        navigation.navigate("Device");
-                                        toggleOverlay()
-                                    }}
-                                />
-                            </View>
-                        </View>
-                    </Overlay>
-                    <Overlay isVisible={deleteVisible} onBackdropPress={toggleDeleteOverlay}>
-                        <View style={styles.containerOverlay}>
-                            <Text style={styles.textName}>Delete Device?</Text>
-                            <View style={{
-                                flexDirection: "row",
-                            }}>
-                                <Button
-                                    title="Delete"
-                                    containerStyle={{
-                                        flex: 1,
-                                        height: 40,
-                                        width: 100,
-                                        marginHorizontal: 20,
-                                        marginVertical: 20,
-                                    }}
-                                    buttonStyle={{
-                                        backgroundColor: '#FD9A3F',
-                                        borderRadius: 100 / 2
-                                    }}
-                                    titleStyle={{
-                                        color: 'white',
-                                        marginHorizontal: 20,
-                                    }}
-                                    onPress={toggleDeleteOverlay}
-                                />
-                                <Button
-                                    containerStyle={{
-                                        flex: 1,
-                                        width: 100,
-                                        marginHorizontal: 20,
-                                        marginVertical: 20,
-                                    }}
-                                    title="Cancel"
-                                    type="clear"
-                                    titleStyle={{color: '#FD9A3F'}}
-                                    onPress={toggleDeleteOverlay}
-                                />
-                            </View>
-                        </View>
-                    </Overlay>
 
 
                 </View>

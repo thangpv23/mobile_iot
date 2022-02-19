@@ -12,6 +12,7 @@ import SignIn from "./Pages/Auth/SignIn";
 import ChangePassword from "./Pages/ChangePassword";
 import {Provider, useSelector} from 'react-redux';
 import {store} from "./services/store";
+import DeviceDetail from "./Pages/DeviceDetail";
 
 
 const Stack = createNativeStackNavigator();
@@ -32,6 +33,7 @@ const MyStack = () => {
                             <Stack.Screen name="Change_password" component={ChangePassword}/>
                             <Stack.Screen name="Room" component={RoomList}/>
                             <Stack.Screen name="Controller" component={ControllerList}/>
+                            <Stack.Screen name="DeviceDetail" component={DeviceDetail}/>
                         </>
                     ) : (
                         <>

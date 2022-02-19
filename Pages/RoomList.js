@@ -14,6 +14,7 @@ export default ({route,navigation}) => {
 
     const [visible, setVisible] = useState(false);
     const {homeId,homeName} = route.params;
+    const [roomId,setRoomId] = useState("");
 
     const {data} = useGetRoomsQuery(homeId);
     console.log(data);
@@ -26,8 +27,10 @@ export default ({route,navigation}) => {
     const toggleOverlay = () => {
         setVisible(!visible);
     };
-    const handleLongPressButton = () => {
+    const handleLongPressButton = (id) => {
         toggleDeleteOverlay();
+        setRoomId(id)
+
     }
 
     const handleAddRoom =  async () =>{
@@ -64,8 +67,10 @@ export default ({route,navigation}) => {
                         data?.map(room =>{
                             console.log(room);
                             return(
-                                <TouchableOpacity key={room.id} style={styles.item} onPress={() => openDeviceList(room.id)}>
-                                    <Room_button  name={room.name}/>
+                                <TouchableOpacity key={room.id} style={styles.item}
+                                                  onLongPress={() =>handleLongPressButton(room.id)}
+                                                  onPress={() => openDeviceList(room.id,room.name)}>
+                                    <Room_button  name={room.name} roomId={room.id}/>
                                 </TouchableOpacity>
                             )
                         })

@@ -1,6 +1,6 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react";
 
-export const homeApi = createApi({
+export const deviceApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: "http://10.0.2.2:8081/api/",
         prepareHeaders: (headers, { getState }) => {
@@ -12,36 +12,37 @@ export const homeApi = createApi({
             return headers
         },
     }),
-    tagTypes:['Home'],
+    tagTypes:['Device'],
     endpoints: (builder) => ({
-        getHomes: builder.query({
+        getDevices: builder.query({
             query:() => ({
-                url:"/homes",
+                url:"/devices",
                 method:"GET",
             }),
-            providesTags: ['Home'],
+            providesTags: ['Device'],
         }),
-        getHomeById: builder.query({
+        getDeviceById: builder.query({
             query:(id) =>({
-                url:`homes/${id}`,
+                url:`devices/${id}`,
             })
         }),
-        addHome :builder.mutation({
+
+        deleteDevice: builder.mutation({
+            query:(id) =>({
+                url:`devices/${id}`,
+                method:"DELETE",
+            }),
+            invalidatesTags: ['Device'],
+        }),
+        putDevice: builder.mutation({
             query:(body) =>({
-                url:"/homes",
+                url:"/devices",
                 method:"POST",
                 body:body,
             }),
-            invalidatesTags: ['Home'],
-        }),
-        deleteHome: builder.mutation({
-            query:(id) =>({
-                url:`homes/${id}`,
-                method:"DELETE",
-            }),
-            invalidatesTags: ['Home'],
+            invalidatesTags: ['Device'],
         })
     }),
-    reducerPath: "home",
+    reducerPath: "device",
 });
-export const {useGetHomesQuery,useGetHomeByIdQuery,useAddHomeMutation,useDeleteHomeMutation} = homeApi;
+export const {useGetDevicesQuery,useGetDeviceByIdQuery,usePutDeviceMutation,useDeleteDeviceMutation,useAddDeviceMutation} = deviceApi;

@@ -1,14 +1,41 @@
 import React, {useState} from "react";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import AppHeader from "../AppHeader";
 import Add_button from "../Components/Button/AddButton";
 import DeviceButton from "../Components/Button/DeviceButton";
 import {Button, Icon, Overlay} from "react-native-elements";
-import ModalSelector from 'react-native-modal-selector'
+import ModalSelector from 'react-native-modal-selector';
 
-export default ({navigation}) => {
+import {
+    useAddDeviceMutation,
+    useDeleteDeviceMutation,
+    useGetDevicesQuery,
+    usePutDeviceMutation
+} from "../services/device/device";
+import HouseButton from "../Components/Button/HouseButton";
+import {useGetControllerQuery} from "../services/controller/controller";
+
+
+
+export default ({ route, navigation}) => {
+
+    const {roomId,roomName} = route.params;
+
+    const {data} = useGetControllerQuery(roomId);
+    console.log(data)
+
+    // const {homeName} = route.params;
+
+    const openDeviceDetail = (deviceID,deviceName) =>{
+        navigation.navigate("DeviceDetail",{controllerId:deviceID, controllerName: deviceName});
+    };
+
+    const [inputState,setInputState] = useState({
+        name:"",
+    });
     const [visible, setVisible] = useState(false);
     const [deleteVisible, setDeleteVisible] = useState(false);
+    const [addDevice] = useAddDeviceMutation();
     const toggleDeleteOverlay = () => {
         setDeleteVisible(!deleteVisible);
     };
@@ -18,61 +45,76 @@ export default ({navigation}) => {
     const handleLongPressButton = () => {
         toggleDeleteOverlay();
     }
+    const handleAddDevice =  async () =>{
+        try{
+            if(inputState.name){
+                const body = inputState;
+                await addDevice({body}).unwrap();
+                toggleOverlay();
+            }
+        }catch (err){
+            console.log(err);
+        }
+    }
 
-    let index = 0;
-    const data = [
-        {key: index++, section: true, label: 'Devices List'},
-        {key: index++, label: 'Device 1'},
-        {key: index++, label: 'Device 2'},
-        {key: index++, label: 'Device 3'},
-    ];
+    const handleInput = (type, value) => {
+        setInputState({
+            ...inputState,
+            [type]: value,
+        })
+    };
+
+
     return (
         <View>
             <AppHeader title={""} navigation={navigation}>
             </AppHeader>
             <Text style={styles.text}>
-                Username > Home 1 > Room 1
+                Username >
             </Text>
             <View style={styles.container}>
 
                 <View style={styles.main}>
-                    <View style={styles.item}>
-                        <DeviceButton/>
-                    </View>
-                    <View style={styles.item} >
-                        <DeviceButton/>
-                    </View>
-                    <View style={styles.item}>
-                        <DeviceButton/>
-                    </View>
+                    {/*{*/}
+                    {/*//     data?.map(device => {*/}
+                    {/*//         return (*/}
+                    {/*//             <TouchableOpacity  key={device.id} style={styles.item}*/}
+                    {/*//                                onLongPress={() =>handleLongPressButton(device.id)}*/}
+                    {/*//                                onPress={() => openDeviceDetail(device.id, device.name)}>*/}
+                    {/*//                 <HouseButton name={device.name} homeId={device.id} />*/}
+                    {/*//             </TouchableOpacity >*/}
+                    {/*//         )*/}
+                    {/*//     })*/}
+                    {/*}*/}
                     <TouchableOpacity style={styles.item} onPress={toggleOverlay}>
                         <Add_button/>
                     </TouchableOpacity>
                     <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
                         <View style={styles.form}>
                             <Text style={styles.textName}>
-                                Add Device
+                                Add House
                             </Text>
-                            <ModalSelector
-                                style={{padding: 20}}
-                                data={data}
-                                initValue="Select Device"
-                                onChange={(option) => {
-                                    alert(`Selected ${option.label} (${option.key})`)
-                                }}/>
+                            <TextInput style={styles.inputText}
+                                       placeholder="Device name"
+                                       onChangeText={(value) => handleInput("name", value)}
+                            />
+                            <TextInput style={styles.inputText}
+                                       placeholder="ID"
+                                       onChangeText={(value) => handleInput("id", value)}
+                            />
+
                             <View style={{
                                 flexDirection: "row",
                                 alignContent: 'center',
                                 alignItems: 'center',
                                 backgroundColor: '#FD9A3F',
                                 borderRadius: 100 / 50
-                            }}
-                            >
+
+                            }}>
                                 <Button
                                     buttonStyle={{
                                         backgroundColor: 'rgba(253, 154, 63, 1)',
                                         borderRadius: 30,
-                                        width:"100%"
                                     }}
                                     borderRadius={100 / 50}
                                     icon={
@@ -85,10 +127,7 @@ export default ({navigation}) => {
                                         />
                                     }
                                     title="Add"
-                                    onPress={() => {
-                                        navigation.navigate("Device");
-                                        toggleOverlay()
-                                    }}
+                                    onPress={handleAddDevice}
                                 />
                             </View>
                         </View>
@@ -192,7 +231,6 @@ const styles = StyleSheet.create({
     form: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 250,
         borderRadius: 100 / 50
     },
     containerOverlay: {

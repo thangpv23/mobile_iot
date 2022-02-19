@@ -131,7 +131,7 @@ export default  ({navigation}) => {
                             title="Sign up"
                             type="clear"
                             titleStyle={{color: '#FD9A3F'}}
-                            onPress={() => navigation.navigate("Sign Up")}
+                            onPress={() => navigation.navigate("Sign_up")}
                         />
                     </View>
                 </View>

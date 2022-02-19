@@ -5,6 +5,8 @@ import {setupListeners} from "@reduxjs/toolkit/query";
 import authReducer from "./auth/authSlice";
 import {roomApi} from "./room/room";
 import {userApi} from "./user/user";
+import {deviceApi} from "./device/device";
+import {controllerApi} from "./controller/controller";
 
 export const store = configureStore({
     reducer: {
@@ -12,13 +14,17 @@ export const store = configureStore({
         [homeApi.reducerPath]: homeApi.reducer,
         [roomApi.reducerPath]: roomApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
+        [deviceApi.reducerPath]: userApi.reducer,
+        [controllerApi.reducerPath]: userApi.reducer,
         loginInfo:authReducer,
     },
     middleware: (gDM) => gDM().concat(
         authApi.middleware,
         homeApi.middleware,
         roomApi.middleware,
-        userApi.middleware),
+        userApi.middleware,
+        deviceApi.middleware,
+        controllerApi.middleware),
     devTools:true,
 });
 setupListeners(store.dispatch)

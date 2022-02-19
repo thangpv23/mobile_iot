@@ -1,40 +1,38 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Button, ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
 import Header from '../AppHeader';
-import {useGetUserQuery, usePostUserMutation} from "../services/user/user";
+import {useChangePasswordMutation, useGetUserQuery, usePostUserMutation} from "../services/user/user";
 
 export default ({navigation}) => {
 
-    const {data,isLoading,isFetching} = useGetUserQuery();
+    const {data} = useGetUserQuery();
     const initState = {
-        firstName: "",
-        lastName: "",
-        email:"",
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword:"",
+    };
+    const [inputState, setInputState] = useState(initState);
+    const [changePassword] = useChangePasswordMutation();
+
+    const handleInput = (type, value) => {
+        setInputState({
+            ...inputState,
+            [type]: value,
+        })
     }
-    const [firstName, setFirstName] = useState("");
-    const [lastName,setLastName] = useState("");
-    const [email,setEmail] = useState("");
-    const [login,setLogin] = useState("");
-    const [postUser] = usePostUserMutation();
-    useEffect(() =>{
-        if(!isLoading && !isFetching && data){
-            setFirstName(data?.firstName);
-            setLastName(data?.lastName);
-            setEmail(data?.email);
-            setLogin(data?.login);
-        }
-    },[data,isLoading,isFetching]);
 
     const handleSubmit = async () => {
         try {
-            const body = {
-                firstName,
-                lastName,
-                email,
-                login,
+            if(inputState.newPassword === inputState.currentPassword !== ""){
+                const body = {
+                    currentPassword: inputState.currentPassword,
+                    newPassword: inputState.newPassword,
+                }
+                console.log(body);
+                await changePassword(body).unwrap();
+                console.log("change password")
+                navigation.navigate("Home");
             }
-            console.log(body)
-            await postUser(body).unwrap();
         } catch (e) {
             console.log(e);
         }
@@ -51,48 +49,31 @@ export default ({navigation}) => {
                 <View style={styles.info}>
                     <View>
                         <Text style={styles.text}>
-                            First Name
+                            current password
                         </Text>
                         <TextInput style={styles.inputText}
-                                   placeholder="firstName"
-                                   defaultValue={data?.firstName}
-                                   onChangeText={(value) => setFirstName(value)}
-                                   errorStyle={{color: "red"}}
-                                   errorMessage="Not a valid"
+
+                                   onChangeText={(value) => handleInput("currentPassword", value)}
                         />
 
                         <Text style={styles.text}>
-                            Last Name
+                            new password
                         </Text>
                         <TextInput style={styles.inputText}
-                                   placeholder="lastName"
-                                   onChangeText={(value) => setLastName(value)}
-                                   defaultValue={data?.lastName}
-                                   errorStyle={{color: "red"}}
-                                   errorMessage="Not a valid"
+
+                                   onChangeText={(value) => handleInput("newPassword", value)}
                         />
 
                         <Text style={styles.text}>
-                            Email
+                            confirm new password
                         </Text>
                         <TextInput style={styles.inputText}
-                                   placeholder="Email"
-                                   value={data?.email}
-                                   editable={false}
-                                   errorStyle={{color: "red"}}
-                                   errorMessage="Not a valid"
+
+                                   onChangeText={(value) => handleInput("confirmNewPassword", value)}
+
                         />
 
-                        <Text style={styles.text}>
-                            Username
-                        </Text>
-                        <TextInput style={styles.inputText}
-                                   placeholder="Username"
-                                   editable={false}
-                                   value={data?.login}
-                                   errorStyle={{color: "red"}}
-                                   errorMessage="Not a valid"
-                        />
+
                         <View>
                             <Button title="Save" color="#FD9A3F" onPress={handleSubmit}/>
                         </View>

@@ -28,9 +28,17 @@ export const userApi = createApi({
                 method:"POST",
                 body:body,
             }),
-            providesTags: ['User'],
+            invalidatesTags: ['User'],
+        }),
+        changePassword: builder.mutation({
+            query:(body) =>({
+                url:'account/change-password',
+                method:"POST",
+                body:body,
+            }),
+            invalidatesTags: ['User'],
         })
     }),
     reducerPath: "user",
 });
-export const {useGetUserQuery,usePostUserMutation} = userApi;
+export const {useGetUserQuery,usePostUserMutation,useChangePasswordMutation} = userApi;

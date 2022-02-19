@@ -36,7 +36,7 @@ const AppHeader = (props) => {
     };
 
     const openChangePassword = () => {
-
+        props.navigation.navigate("Change_password");
     };
 
     return (

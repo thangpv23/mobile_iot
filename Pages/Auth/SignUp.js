@@ -33,6 +33,7 @@ export default ({navigation}) => {
                 lastName: inputState.lastName,
             };
             await signUp(body).unwrap();
+            navigation.navigate("Log_in");
         } catch (err) {
             console.log(err)
         }
@@ -116,7 +117,7 @@ export default ({navigation}) => {
                                 title="Cancel"
                                 type="clear"
                                 titleStyle={{color: '#FD9A3F'}}
-                                onPress={() => navigation.navigate('Log In')}
+                                onPress={() => navigation.navigate('Log_in')}
                             />
                         </View>
                     </View>

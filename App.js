@@ -9,6 +9,7 @@ import HomeList from "./Pages/HomeList";
 import UserInfo from "./Pages/UserInfo";
 import Signup from "./Pages/Auth/SignUp";
 import SignIn from "./Pages/Auth/SignIn";
+import ChangePassword from "./Pages/ChangePassword";
 import {Provider, useSelector} from 'react-redux';
 import {store} from "./services/store";
 
@@ -28,13 +29,14 @@ const MyStack = () => {
                         <>
                             <Stack.Screen name="Home" component={HomeList}/>
                             <Stack.Screen name="User_info" component={UserInfo}/>
+                            <Stack.Screen name="Change_password" component={ChangePassword}/>
                             <Stack.Screen name="Room" component={RoomList}/>
                             <Stack.Screen name="Controller" component={ControllerList}/>
                         </>
                     ) : (
                         <>
-                            <Stack.Screen name="Log In" component={SignIn}/>
-                            <Stack.Screen name="Sign Up" component={Signup}/>
+                            <Stack.Screen name="Log_in" component={SignIn}/>
+                            <Stack.Screen name="Sign_up" component={Signup}/>
                         </>
                     )
                 }

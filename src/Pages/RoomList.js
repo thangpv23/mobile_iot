@@ -1,55 +1,40 @@
 import React, {useState} from "react";
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import AppHeader from "../AppHeader";
-import Add_button from "../Components/Button/AddButton";
-import DeviceButton from "../Components/Button/DeviceButton";
+import {ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import Header from "../AppHeader";
+import AddButton from "../Components/Button/AddButton";
+import RoomButton from "../Components/Button/RoomButton";
 import {Button, Icon, Overlay} from "react-native-elements";
-import ModalSelector from 'react-native-modal-selector';
+import {useAddRoomMutation, useGetRoomsQuery} from "../services/room/room";
 
-import {
-    useAddDeviceMutation,
-    useDeleteDeviceMutation,
-    useGetDevicesQuery,
-    usePutDeviceMutation
-} from "../services/device/device";
-import HouseButton from "../Components/Button/HouseButton";
-import {useGetControllerQuery} from "../services/controller/controller";
-
-
-
-export default ({ route, navigation}) => {
-
-    const {roomId,roomName} = route.params;
-
-    const {data} = useGetControllerQuery(roomId);
-    console.log(data)
-
-    // const {homeName} = route.params;
-
-    const openDeviceDetail = (deviceID,deviceName) =>{
-        navigation.navigate("DeviceDetail",{controllerId:deviceID, controllerName: deviceName});
-    };
+export default ({route,navigation}) => {
 
     const [inputState,setInputState] = useState({
         name:"",
     });
+
     const [visible, setVisible] = useState(false);
+    const {homeId,homeName} = route.params;
+    const [roomDeleteId,setRoomDeleteId] = useState("");
+    const {data} = useGetRoomsQuery({homeId});
+    const [addRoom] = useAddRoomMutation();
+    const [deleteRoom] = useAddRoomMutation();
     const [deleteVisible, setDeleteVisible] = useState(false);
-    const [addDevice] = useAddDeviceMutation();
     const toggleDeleteOverlay = () => {
         setDeleteVisible(!deleteVisible);
     };
     const toggleOverlay = () => {
         setVisible(!visible);
     };
-    const handleLongPressButton = () => {
+    const handleLongPressButton = (id) => {
         toggleDeleteOverlay();
+        setRoomDeleteId(id)
     }
-    const handleAddDevice =  async () =>{
+
+    const handleAddRoom =  async () =>{
         try{
             if(inputState.name){
                 const body = inputState;
-                await addDevice({body}).unwrap();
+                await addRoom({body,homeId}).unwrap();
                 toggleOverlay();
             }
         }catch (err){
@@ -63,72 +48,82 @@ export default ({ route, navigation}) => {
             [type]: value,
         })
     };
-
+    const openControllerList = (roomId,roomName) =>{
+        navigation.navigate("Controller",{homeId:homeId,roomId:roomId,roomName:roomName});
+    }
+    const handleDeleteRoom =  async () => {
+        try {
+            await deleteRoom(roomDeleteId).unwrap();
+            toggleDeleteOverlay();
+        }catch (e) {
+            console.log(e)
+        }
+    };
 
     return (
-        <View>
-            <AppHeader title={""} navigation={navigation}>
-            </AppHeader>
+        <ScrollView>
+            <Header title={homeName} navigation={navigation}/>
             <Text style={styles.text}>
-                Username >
+                Room
             </Text>
             <View style={styles.container}>
-
                 <View style={styles.main}>
-                    {/*{*/}
-                    {/*//     data?.map(device => {*/}
-                    {/*//         return (*/}
-                    {/*//             <TouchableOpacity  key={device.id} style={styles.item}*/}
-                    {/*//                                onLongPress={() =>handleLongPressButton(device.id)}*/}
-                    {/*//                                onPress={() => openDeviceDetail(device.id, device.name)}>*/}
-                    {/*//                 <HouseButton name={device.name} homeId={device.id} />*/}
-                    {/*//             </TouchableOpacity >*/}
-                    {/*//         )*/}
-                    {/*//     })*/}
-                    {/*}*/}
+                    {
+                        data?.map(room =>{
+                            return(
+                                <TouchableOpacity key={room.id} style={styles.item}
+                                                  onLongPress={() =>handleLongPressButton(room.id)}
+                                                  onPress={() => openControllerList(room.id,room.name)}>
+                                    <RoomButton  name={room.name} roomId={room.id}/>
+                                </TouchableOpacity>
+                            )
+                        })
+                    }
                     <TouchableOpacity style={styles.item} onPress={toggleOverlay}>
-                        <Add_button/>
+                        <AddButton/>
                     </TouchableOpacity>
                     <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
                         <View style={styles.form}>
-                            <Text style={styles.textName}>
-                                Add House
-                            </Text>
-                            <TextInput style={styles.inputText}
-                                       placeholder="Device name"
-                                       onChangeText={(value) => handleInput("name", value)}
-                            />
-                            <TextInput style={styles.inputText}
-                                       placeholder="ID"
-                                       onChangeText={(value) => handleInput("id", value)}
-                            />
+                            <View style={styles.form}>
+                                <View style={styles.form}>
+                                    <Text style={styles.textName}>
+                                        Add Room
+                                    </Text>
+                                    <TextInput style={styles.inputText}
+                                               placeholder="Room name"
+                                               onChangeText={(value) =>handleInput("name",value)}
+                                    />
 
-                            <View style={{
-                                flexDirection: "row",
-                                alignContent: 'center',
-                                alignItems: 'center',
-                                backgroundColor: '#FD9A3F',
-                                borderRadius: 100 / 50
+                                    <View style={{
+                                        flexDirection: "row",
+                                        alignContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: '#FD9A3F',
+                                        borderRadius: 100 / 50
 
-                            }}>
-                                <Button
-                                    buttonStyle={{
-                                        backgroundColor: 'rgba(253, 154, 63, 1)',
-                                        borderRadius: 30,
-                                    }}
-                                    borderRadius={100 / 50}
-                                    icon={
-                                        <Icon
-                                            name="plus"
-                                            type="font-awesome"
-                                            color="white"
-                                            size={25}
-                                            iconStyle={{marginRight: 10}}
+                                    }}>
+                                        <Button
+                                            buttonStyle={{
+                                                backgroundColor: 'rgba(253, 154, 63, 1)',
+                                                borderRadius: 30,
+                                            }}
+                                            borderRadius={100 / 50}
+                                            icon={
+                                                <Icon
+                                                    name="plus"
+                                                    type="font-awesome"
+                                                    color="white"
+                                                    size={25}
+                                                    iconStyle={{marginRight: 10}}
+
+                                                />
+                                            }
+                                            title="Add"
+                                            onPress={handleAddRoom}
                                         />
-                                    }
-                                    title="Add"
-                                    onPress={handleAddDevice}
-                                />
+
+                                    </View>
+                                </View>
                             </View>
                         </View>
                     </Overlay>
@@ -140,6 +135,7 @@ export default ({ route, navigation}) => {
                             }}>
                                 <Button
                                     title="Delete"
+                                    onPress={handleDeleteRoom}
                                     containerStyle={{
                                         flex: 1,
                                         height: 40,
@@ -164,6 +160,7 @@ export default ({ route, navigation}) => {
                                         marginVertical: 20,
                                     }}
                                     title="Cancel"
+                                    onPress={toggleDeleteOverlay}
                                     type="clear"
                                     titleStyle={{color: '#FD9A3F'}}
                                 />
@@ -174,7 +171,7 @@ export default ({ route, navigation}) => {
 
                 </View>
             </View>
-        </View>
+        </ScrollView>
 
 
     )
@@ -222,13 +219,14 @@ const styles = StyleSheet.create({
 
         fontFamily: 'Roboto Mono',
         fontWeight: "bold",
-        fontSize: 25,
+        fontSize: 30,
         lineHeight: 50,
         color: '#FD9A3F',
         alignItems: 'flex-end',
         marginLeft: 20,
     },
     form: {
+
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 100 / 50

@@ -14,9 +14,8 @@ export const store = configureStore({
         [homeApi.reducerPath]: homeApi.reducer,
         [roomApi.reducerPath]: roomApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
-
-        [controllerApi.reducerPath]: controllerApi.reducerPath,
         [deviceApi.reducerPath]: deviceApi.reducer,
+        [controllerApi.reducerPath]: controllerApi.reducer,
         loginInfo:authReducer,
     },
     middleware: (gDM) => gDM().concat(

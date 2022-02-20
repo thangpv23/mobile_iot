@@ -1,72 +1,55 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {StyleSheet, Switch, Text, TextInput, TouchableOpacity, View} from "react-native";
 import AppHeader from "../AppHeader";
 import {Button, Icon, Overlay} from "react-native-elements";
 import ModalSelector from 'react-native-modal-selector'
 import DeviceController from "../Components/Button/DeviceController";
-
+import {getClient} from "../setupMqtt"
 import {
-    useAddDeviceMutation,
-    useDeleteDeviceMutation,
-    useGetDevicesQuery,
-    usePutDeviceMutation
+    useGetDeviceByIdQuery,
 } from "../services/device/device";
+import {useSelector} from "react-redux";
+import jwtDecode from "jwt-decode";
 
-export default ({navigation}) => {
+export default (props) => {
 
-
-
-    const initState = {
-        status: "",
-    };
-
-    const [deviceState, setDeviceState] = useState(initState);
-    const [putDevice] = usePutDeviceMutation();
-    const [visible, setVisible] = useState(false);
-    const [deleteVisible, setDeleteVisible] = useState(false);
-
-
-    const toggleDeleteOverlay = () => {
-        setDeleteVisible(!deleteVisible);
-    };
-    const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-    const toggleOverlay = () => {
-        setVisible(!visible);
-    };
-    const handleLongPressButton = () => {
-        toggleDeleteOverlay();
-    };
-
-
-    const handleUsePutDeviceMutation = async () => {
+    const {data,navigation} = props;
+    const {refetch} = useGetDeviceByIdQuery(data.id);
+    const [isEnable, setIsEnable] = useState(data.status === "ON");
+    const token = useSelector(state => state.loginInfo.token);
+    const decodeToken = jwtDecode(token);
+    const handleChangeStatus = async () => {
+        const client = await getClient();
         try {
-            toggleSwitch();
-            console.log("status");
-            await putDevice(deviceId).unwrap();
-
-
+            const date = new Date();
+            let newStatus;
+            if (isEnable) {
+                newStatus = "OFF"
+            } else newStatus = "ON";
+            console.log(newStatus);
+            const payload = {
+                device: data.type,
+                data: {
+                    status: newStatus,
+                },
+                time: date.toString(),
+                creator: decodeToken.username,
+            };
+            client.on('connect', function () {
+                client.publish(`esp32/devices/${data.id}`, JSON.stringify(payload), 0, false);
+            });
         } catch (e) {
             console.log(e)
+        } finally {
+            setIsEnable(prev => !prev);
+            refetch();
+            client.disconnect();
         }
     };
-
-
-    let index = 0;
-    const data = [
-        {key: index++, section: true, label: 'Devices List'},
-        {key: index++, label: 'Device 1'},
-        {key: index++, label: 'Device 2'},
-        {key: index++, label: 'Device 3'},
-
-    ];
     return (
         <View>
-            <AppHeader title={""}>
-
-            </AppHeader>
+            <AppHeader title={data.type} navigation={navigation}/>
             <Text style={styles.text}>
-                Username > Home 1 > Room 1
             </Text>
             <View style={styles.container}>
 
@@ -76,17 +59,17 @@ export default ({navigation}) => {
                         <DeviceController/>
                     </View>
 
-                    <View style={styles.switch} onPress={toggleOverlay}>
+                    <View style={styles.switch}>
                         <Text style={styles.text}>
                             {/*Off*/}
                             Lock
                         </Text>
                         <Switch
-                            trackColor={{ false: "#767577", true: "#81b0ff" }}
-                            thumbColor={isEnabled ? "#FD9A3F" : "#f4f3f4"}
-                            onValueChange={handleUsePutDeviceMutation}
-                            value={isEnabled}
-                            style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+                            trackColor={{false: "#767577", true: "#81b0ff"}}
+                            thumbColor={isEnable ? "#FD9A3F" : "#f4f3f4"}
+                            onValueChange={handleChangeStatus}
+                            value={isEnable}
+                            style={{transform: [{scaleX: 1.5}, {scaleY: 1.5}]}}
                         />
                         <Text style={styles.text}>
                             {/*On*/}
@@ -165,7 +148,7 @@ const styles = StyleSheet.create({
     },
     switch: {
 
-        flexDirection:"row",
+        flexDirection: "row",
         padding: 30,
     }
 })

@@ -80,7 +80,7 @@ export default  ({navigation}) => {
                             inputState.username ?
                                 <TouchableOpacity style={styles.closeButtonParent}
                                                   onPress={() => deleteInput("username")}>
-                                    <Image style={styles.closeButton} source={require("../../assets/close.png")}/>
+                                    <Image style={styles.closeButton} source={require("../../../assets/close.png")}/>
                                 </TouchableOpacity> : null
                         }
                     </View>
@@ -94,7 +94,7 @@ export default  ({navigation}) => {
                             inputState.password ?
                                 <TouchableOpacity style={styles.closeButtonParent}
                                                   onPress={() => deleteInput("password")}>
-                                    <Image style={styles.closeButton} source={require("../../assets/close.png")}/>
+                                    <Image style={styles.closeButton} source={require("../../../assets/close.png")}/>
                                 </TouchableOpacity> : null
                         }
                     </View>

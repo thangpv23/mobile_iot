@@ -78,7 +78,7 @@ const AppHeader = (props) => {
                             </Overlay>
                         </>
                     }
-                    centerComponent={{text: 'Smartinum', style: styles.heading}}
+                    centerComponent={{text: `${props.title}`, style: styles.heading}}
             />
         </View>
     );

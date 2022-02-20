@@ -1,33 +1,61 @@
-import React, {useReducer, useState} from "react";
-import {ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import Header from "../AppHeader";
-import AddButton from "../Components/Button/AddButton";
-import HouseButton from "../Components/Button/HouseButton";
+import React, {useState} from "react";
+import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import AppHeader from "../AppHeader";
+import Add_button from "../Components/Button/AddButton";
+import DeviceButton from "../Components/Button/DeviceButton";
 import {Button, Icon, Overlay} from "react-native-elements";
-import {useAddHomeMutation, useDeleteHomeMutation, useGetHomesQuery} from "../services/home/home";
-import {useSelector} from "react-redux";
+import ModalSelector from 'react-native-modal-selector';
+
+import {
+    useAddDeviceMutation,
+    useDeleteDeviceMutation,
+    useGetDevicesQuery,
+    usePutDeviceMutation
+} from "../services/device/device";
+import HouseButton from "../Components/Button/HouseButton";
+import {useGetControllersQuery} from "../services/controller/controller";
 
 
-export default ({navigation}) => {
+
+
+export default ({ route, navigation}) => {
+
+
+    const [inputState, setInputState] = useState({
+        type: "",
+        pin: "",
+    });
+    const {controllerId, controllerName} = route.params;
     const [visible, setVisible] = useState(false);
-
-    const {data} = useGetHomesQuery();
-    console.log(data)
-    const initState = {
-        name: "",
-        location: "",
-    };
-    const [inputState, setInputState] = useState(initState);
-    const [addHome] = useAddHomeMutation();
-    const [deleteHome] = useDeleteHomeMutation();
     const [deleteVisible, setDeleteVisible] = useState(false);
-    const [homeId,setHomeId] = useState("");
+    const [addDevice] = useAddDeviceMutation();
+    const {data} = useGetDevicesQuery({controllerId});
     const toggleDeleteOverlay = () => {
         setDeleteVisible(!deleteVisible);
     };
-    const role = useSelector(state => state.loginInfo.role);
     const toggleOverlay = () => {
         setVisible(!visible);
+    };
+    const handleLongPressButton = () => {
+        toggleDeleteOverlay();
+    }
+    const handleAddDevice = async () => {
+        try {
+            if (inputState.type && inputState.pin) {
+                const body = {
+                    type: inputState.type,
+                    pin: inputState.pin,
+                    status: "OFF",
+                }
+                await addDevice({body, controllerId}).unwrap();
+                toggleOverlay();
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    const openDeviceDetail = (deviceId, deviceType) => {
+        navigation.navigate("DeviceWrap", {deviceId: deviceId, deviceType: deviceType});
     };
 
     const handleInput = (type, value) => {
@@ -35,70 +63,43 @@ export default ({navigation}) => {
             ...inputState,
             [type]: value,
         })
-    }
-    const handleAddHome = async () => {
-        try {
-            if (inputState.name && inputState.location) {
-                await addHome(inputState).unwrap();
-                toggleOverlay();
-            }
+    };
 
-        } catch (e) {
-            console.log(e)
-        }
-    };
-    const openRoomList = (homeId,homeName) =>{
-        navigation.navigate("Room",{homeId:homeId, homeName: homeName});
-    };
-    const handleLongPressButton = (id) => {
-        toggleDeleteOverlay();
-        setHomeId(id)
-    }
-    console.log(homeId)
-    const handleDeleteHome =  async () => {
-        try {
-            await deleteHome(homeId).unwrap();
-            toggleDeleteOverlay();
-        }catch (e) {
-            console.log(e)
-        }
-    };
 
     return (
-        <ScrollView>
-            <Header title={""} back={false} navigation={navigation}/>
+        <View>
+            <AppHeader title={controllerName} navigation={navigation}/>
             <Text style={styles.text}>
-                Username
             </Text>
             <View style={styles.container}>
+
                 <View style={styles.main}>
                     {
-                        data?.map(home => {
+                        data?.map(device => {
                             return (
-                                <TouchableOpacity  key={home.id} style={styles.item}
-                                                   onLongPress={() =>handleLongPressButton(home.id)}
-                                                   onPress={() => openRoomList(home.id,home.name)}>
-                                    <HouseButton name={home.name} homeId={home.id} />
-                                </TouchableOpacity >
+                                <TouchableOpacity key={device.id} style={styles.item}
+                                                  onLongPress={() => handleLongPressButton(device.id)}
+                                                  onPress={() => openDeviceDetail(device.id, device.type)}>
+                                    <DeviceButton name={device.type} homeId={device.id}/>
+                                </TouchableOpacity>
                             )
                         })
                     }
-
                     <TouchableOpacity style={styles.item} onPress={toggleOverlay}>
-                        <AddButton/>
+                        <Add_button/>
                     </TouchableOpacity>
                     <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
                         <View style={styles.form}>
-                            <Text style={styles.textName} onPress={handleAddHome}>
-                                Add House
+                            <Text style={styles.textName}>
+                                Add Device
                             </Text>
                             <TextInput style={styles.inputText}
-                                       placeholder="House name"
-                                       onChangeText={(value) => handleInput("name", value)}
+                                       placeholder="Device type"
+                                       onChangeText={(value) => handleInput("type", value)}
                             />
                             <TextInput style={styles.inputText}
-                                       placeholder="Address"
-                                       onChangeText={(value) => handleInput("location", value)}
+                                       placeholder="Device pin"
+                                       onChangeText={(value) => handleInput("pin", value)}
                             />
 
                             <View style={{
@@ -125,14 +126,14 @@ export default ({navigation}) => {
                                         />
                                     }
                                     title="Add"
-                                    onPress={handleAddHome}
+                                    onPress={handleAddDevice}
                                 />
                             </View>
                         </View>
                     </Overlay>
                     <Overlay isVisible={deleteVisible} onBackdropPress={toggleDeleteOverlay}>
                         <View style={styles.containerOverlay}>
-                            <Text style={styles.textName}>Delete Home?</Text>
+                            <Text style={styles.textName}>Delete Device?</Text>
                             <View style={{
                                 flexDirection: "row",
                             }}>
@@ -149,7 +150,6 @@ export default ({navigation}) => {
                                         backgroundColor: '#FD9A3F',
                                         borderRadius: 100 / 2
                                     }}
-                                    onPress={() =>handleDeleteHome()}
                                     titleStyle={{
                                         color: 'white',
                                         marginHorizontal: 20,
@@ -164,15 +164,16 @@ export default ({navigation}) => {
                                     }}
                                     title="Cancel"
                                     type="clear"
-                                    onPress={toggleDeleteOverlay}
                                     titleStyle={{color: '#FD9A3F'}}
                                 />
                             </View>
                         </View>
                     </Overlay>
+
+
                 </View>
             </View>
-        </ScrollView>
+        </View>
 
 
     )
@@ -180,7 +181,7 @@ export default ({navigation}) => {
 };
 const styles = StyleSheet.create({
     container: {
-        display: "flex",
+
         flexDirection: "row",
         flexWrap: "wrap",
         alignItems: 'center',
@@ -217,9 +218,10 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
     },
     textName: {
+
         fontFamily: 'Roboto Mono',
         fontWeight: "bold",
-        fontSize: 30,
+        fontSize: 25,
         lineHeight: 50,
         color: '#FD9A3F',
         alignItems: 'flex-end',

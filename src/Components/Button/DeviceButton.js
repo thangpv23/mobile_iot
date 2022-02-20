@@ -14,7 +14,7 @@ export default (props) => {
                 </Icon>
             </View>
             <Text style={styles.text}>
-                Device 1
+                {props.name}
             </Text>
         </View>
 

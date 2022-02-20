@@ -15,18 +15,27 @@ export const deviceApi = createApi({
     tagTypes:['Device'],
     endpoints: (builder) => ({
         getDevices: builder.query({
-            query:() => ({
-                url:"/devices",
+            query:({controllerId}) => ({
+                url:`/devices?controllerId=${controllerId}`,
                 method:"GET",
             }),
             providesTags: ['Device'],
         }),
         getDeviceById: builder.query({
-            query:(id) =>({
-                url:`devices/${id}`,
-            })
+            query:(deviceId) =>({
+                url:`devices/${deviceId}`,
+                method:"GET",
+            }),
+            providesTags: ['Device'],
         }),
-
+        addDevice :builder.mutation({
+            query:({body,controllerId}) =>({
+                url:`/devices?controllerId=${controllerId}`,
+                method:"POST",
+                body:body,
+            }),
+            invalidatesTags: ['Device'],
+        }),
         deleteDevice: builder.mutation({
             query:(id) =>({
                 url:`devices/${id}`,

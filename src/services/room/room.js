@@ -16,10 +16,12 @@ export const roomApi = createApi({
     tagTypes:['Room'],
     endpoints: (builder) => ({
         getRooms: builder.query({
-            query:(homeId) => ({
-                url:`/rooms?homeId=${homeId}`,
-                method:"GET",
-            }),
+            query:({homeId}) =>{
+                return({
+                    url:`/rooms?homeId=${homeId}`,
+                    method:"GET",
+                });
+            },
             providesTags: ['Room'],
         }),
         getRoomById: builder.query({

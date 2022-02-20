@@ -7,7 +7,7 @@ export const controllerApi = createApi({
             const token = getState().loginInfo.token;
             // If we have a token set in state, let's assume that we should be passing it.
             if (token) {
-                headers.set('authorization', Bearer ${token})
+                headers.set('authorization',` Bearer ${token}`)
             }
             return headers
         },
@@ -16,12 +16,27 @@ export const controllerApi = createApi({
     endpoints: (builder) => ({
         getControllers: builder.query({
             query:(roomId) => ({
-                url:`/controllers?roomId= ${roomId}`,
+                url:`/controllers?roomId=${roomId}`,
                 method:"GET",
             }),
             providesTags: ['Controller'],
         }),
+        addController :builder.mutation({
+            query:({body,roomId}) =>({
+                url:`/controllers?roomId=${roomId}`,
+                method:"POST",
+                body:body,
+            }),
+            invalidatesTags: ['Controller'],
+        }),
+        deleteController:builder.mutation({
+            query:(id) =>({
+                url:`rooms/${id}`,
+                method:"DELETE",
+            }),
+            invalidatesTags: ['Controller'],
+        })
     }),
     reducerPath: "controller",
 });
-export const {useGetControllersQuery} = controllerApi;
+export const {useGetControllersQuery,useAddControllerMutation,useDeleteControllerMutation} = controllerApi;

@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from "@react-navigation/native";
 import {MenuProvider} from 'react-native-popup-menu';
-import ControllerList from "./Pages/ControllerList";
+import DeviceList from "./Pages/DeviceList";
 import RoomList from "./Pages/RoomList";
 import HomeList from "./Pages/HomeList";
 import UserInfo from "./Pages/UserInfo";
@@ -13,12 +13,17 @@ import ChangePassword from "./Pages/ChangePassword";
 import {Provider, useSelector} from 'react-redux';
 import {store} from "./services/store";
 import DeviceDetail from "./Pages/DeviceDetail";
+import ControllerList from "./Pages/ControllerList";
+import MQTT from 'sp-react-native-mqtt';
+import DeviceWrap from "./Pages/DeviceWrap";
 
 
 const Stack = createNativeStackNavigator();
 const MyStack = () => {
     const isLogin = useSelector(state => state.loginInfo.isLogin);
-    console.log(isLogin);
+
+
+
     return (
         <MenuProvider>
             <Stack.Navigator
@@ -33,7 +38,9 @@ const MyStack = () => {
                             <Stack.Screen name="Change_password" component={ChangePassword}/>
                             <Stack.Screen name="Room" component={RoomList}/>
                             <Stack.Screen name="Controller" component={ControllerList}/>
-                            <Stack.Screen name="DeviceDetail" component={DeviceDetail}/>
+                            <Stack.Screen name="Device" component={DeviceList}/>
+                            <Stack.Screen name="DeviceWrap" component={DeviceWrap}/>
+                            {/*<Stack.Screen name="DeviceDetail" component={DeviceDetail}/>*/}
                         </>
                     ) : (
                         <>

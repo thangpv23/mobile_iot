@@ -14,22 +14,23 @@ import {
 } from "../services/device/device";
 import HouseButton from "../Components/Button/HouseButton";
 import {useGetControllersQuery} from "../services/controller/controller";
+import SensorButton from "../Components/Button/SensorButton";
+import {useAddSensorMutation, useDeleteSensorMutation, useGetSensorsQuery} from "../services/sensor/sensor";
 
 
-export default ({navigation, controllerId}) => {
+export default ({navigation,controllerId}) => {
 
-
+    const {data} = useGetSensorsQuery({controllerId});
     const [inputState, setInputState] = useState({
         type: "",
         pin: "",
     });
-    console.log(controllerId);
     const [visible, setVisible] = useState(false);
     const [deleteVisible, setDeleteVisible] = useState(false);
-    const [deviceDeleteId, setDeviceDeleteId] = useState("");
-    const {data} = useGetDevicesQuery({controllerId});
-    const [addDevice] = useAddDeviceMutation();
-    const [deleteDevice] = useDeleteDeviceMutation();
+    const [sensorDeleteId, setSensorDeleteId] = useState("");
+    const [addSensor] = useAddSensorMutation();
+    const [deleteSensor] = useDeleteSensorMutation();
+
     const toggleDeleteOverlay = () => {
         setDeleteVisible(!deleteVisible);
     };
@@ -38,17 +39,17 @@ export default ({navigation, controllerId}) => {
     };
     const handleLongPressButton = (id) => {
         toggleDeleteOverlay();
-        setDeviceDeleteId(id);
+        setSensorDeleteId(id);
     }
-    const handleAddDevice = async () => {
+    const handleAddSensor = async () => {
         try {
             if (inputState.type && inputState.pin) {
                 const body = {
                     type: inputState.type,
                     pin: inputState.pin,
-                    status: "OFF",
                 }
-                await addDevice({body, controllerId}).unwrap();
+                2
+                await addSensor({body, controllerId}).unwrap();
                 toggleOverlay();
             }
         } catch (err) {
@@ -56,7 +57,7 @@ export default ({navigation, controllerId}) => {
         }
     }
     const openDeviceDetail = (deviceId, deviceType) => {
-        navigation.navigate("DeviceItem", {controllerId: controllerId, deviceId: deviceId, deviceType: deviceType});
+        // navigation.navigate("DeviceWrap", {controllerId:controllerId,deviceId: deviceId, deviceType: deviceType});
     };
 
     const handleInput = (type, value) => {
@@ -67,9 +68,10 @@ export default ({navigation, controllerId}) => {
     };
 
 
-    const handleDeleteDevice = async () => {
+    const handleDeleteSensor = async () => {
         try {
-            await deleteDevice({id:deviceDeleteId,controllerId}).unwrap();
+            console.log();
+            await deleteSensor({id: sensorDeleteId, controllerId}).unwrap();
             toggleDeleteOverlay();
         } catch (e) {
             console.log(e)
@@ -79,17 +81,16 @@ export default ({navigation, controllerId}) => {
     return (
         <View>
             <Text style={styles.text}>
-                Device List
+                Sensor List
             </Text>
             <View style={styles.container}>
                 <View style={styles.main}>
                     {
-                        data?.map(device => {
+                        data?.map(sensor => {
                             return (
-                                <TouchableOpacity key={device.id} style={styles.item}
-                                                  onLongPress={() => handleLongPressButton(device.id)}
-                                                  onPress={() => openDeviceDetail(device.id, device.type)}>
-                                    <DeviceButton name={device.type} homeId={device.id}/>
+                                <TouchableOpacity key={sensor.id} style={styles.item}
+                                                  onLongPress={() => handleLongPressButton(sensor.id)}>
+                                    <SensorButton name={sensor.type}/>
                                 </TouchableOpacity>
                             )
                         })
@@ -100,24 +101,22 @@ export default ({navigation, controllerId}) => {
                     <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
                         <View style={styles.form}>
                             <Text style={styles.textName}>
-                                Add Device
+                                Add Sensor
                             </Text>
                             <TextInput style={styles.inputText}
-                                       placeholder="Device type"
+                                       placeholder="Sensor type"
                                        onChangeText={(value) => handleInput("type", value)}
                             />
                             <TextInput style={styles.inputText}
-                                       placeholder="Device pin"
+                                       placeholder="Sensor pin"
                                        onChangeText={(value) => handleInput("pin", value)}
                             />
-
                             <View style={{
                                 flexDirection: "row",
                                 alignContent: 'center',
                                 alignItems: 'center',
                                 backgroundColor: '#FD9A3F',
                                 borderRadius: 100 / 50
-
                             }}>
                                 <Button
                                     buttonStyle={{
@@ -135,7 +134,7 @@ export default ({navigation, controllerId}) => {
                                         />
                                     }
                                     title="Add"
-                                    onPress={handleAddDevice}
+                                    onPress={handleAddSensor}
                                 />
                             </View>
                         </View>
@@ -148,7 +147,7 @@ export default ({navigation, controllerId}) => {
                             }}>
                                 <Button
                                     title="Delete"
-                                    onPress={handleDeleteDevice}
+                                    onPress={handleDeleteSensor}
                                     containerStyle={{
                                         flex: 1,
                                         height: 40,
@@ -183,20 +182,15 @@ export default ({navigation, controllerId}) => {
                 </View>
             </View>
         </View>
-
-
     )
-
 };
 const styles = StyleSheet.create({
     container: {
-
         flexDirection: "row",
         flexWrap: "wrap",
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 100 / 5
-
     },
     main: {
         width: 500,
@@ -204,7 +198,6 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
         alignItems: 'center',
         justifyContent: 'center',
-
     },
     item: {
         padding: 50,
@@ -227,7 +220,6 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
     },
     textName: {
-
         fontFamily: 'Roboto Mono',
         fontWeight: "bold",
         fontSize: 25,

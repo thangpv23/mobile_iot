@@ -15,7 +15,8 @@ import {store} from "./services/store";
 import DeviceDetail from "./Pages/DeviceDetail";
 import ControllerList from "./Pages/ControllerList";
 import MQTT from 'sp-react-native-mqtt';
-import DeviceWrap from "./Pages/DeviceWrap";
+import DeviceItem from "./Pages/DeviceItem";
+import ControllerItem from "./Pages/ControllerItem";
 
 
 const Stack = createNativeStackNavigator();
@@ -38,8 +39,9 @@ const MyStack = () => {
                             <Stack.Screen name="Change_password" component={ChangePassword}/>
                             <Stack.Screen name="Room" component={RoomList}/>
                             <Stack.Screen name="Controller" component={ControllerList}/>
-                            <Stack.Screen name="Device" component={DeviceList}/>
-                            <Stack.Screen name="DeviceWrap" component={DeviceWrap}/>
+                            <Stack.Screen name="ControllerItem" component={ControllerItem}/>
+                            {/*<Stack.Screen name="Device" component={DeviceList}/>*/}
+                            <Stack.Screen name="DeviceItem" component={DeviceItem}/>
                             {/*<Stack.Screen name="DeviceDetail" component={DeviceDetail}/>*/}
                         </>
                     ) : (

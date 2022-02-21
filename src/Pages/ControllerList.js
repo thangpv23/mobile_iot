@@ -1,6 +1,10 @@
 import React, {useState} from "react";
 import DeviceList from "./DeviceList";
-import {useAddControllerMutation, useGetControllersQuery} from "../services/controller/controller";
+import {
+    useAddControllerMutation,
+    useDeleteControllerMutation,
+    useGetControllersQuery
+} from "../services/controller/controller";
 import {ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import AppHeader from "../AppHeader";
 import {Button, Icon, Overlay} from "react-native-elements";
@@ -9,11 +13,12 @@ import AddButton from "../Components/Button/AddButton";
 import ControllerButton from "../Components/Button/ControllerButton";
 export default ({route, navigation}) => {
     const {roomId,roomName} = route.params;
-    console.log(roomId);
     const {data} = useGetControllersQuery(roomId);
     const [visible, setVisible] = useState(false);
     const [deleteVisible, setDeleteVisible] = useState(false);
+    const [controllerDeleteId,setControllerDeleteId] = useState("");
     const [addController] = useAddControllerMutation();
+    const [deleteController] = useDeleteControllerMutation();
     const [controllerActive,setControllerActive] = useState("");
     const [controllerName,setControllerName] = useState("");
     const toggleDeleteOverlay = () => {
@@ -42,11 +47,22 @@ export default ({route, navigation}) => {
     }
 
     const openDeviceList = (controllerId,name) =>{
-        navigation.navigate("Device",{controllerId:controllerId,controllerName:name})
+        navigation.navigate("ControllerItem",{controllerId:controllerId,controllerName:name})
     }
     const handleLongPressButton = (id) => {
         toggleDeleteOverlay();
+        setControllerDeleteId(id)
     }
+
+    const handleDeleteController =  async () => {
+        try {
+            await deleteController({id:controllerDeleteId,roomId}).unwrap();
+            toggleDeleteOverlay();
+        }catch (e) {
+            console.log(e)
+        }
+    };
+
     return (
         <ScrollView>
             <Header title={roomName} navigation={navigation}/>
@@ -122,6 +138,7 @@ export default ({route, navigation}) => {
                             }}>
                                 <Button
                                     title="Delete"
+                                    onPress={handleDeleteController}
                                     containerStyle={{
                                         flex: 1,
                                         height: 40,

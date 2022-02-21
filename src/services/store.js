@@ -7,6 +7,7 @@ import {roomApi} from "./room/room";
 import {userApi} from "./user/user";
 import {deviceApi} from "./device/device";
 import {controllerApi} from "./controller/controller";
+import {sensorApi} from "./sensor/sensor";
 
 export const store = configureStore({
     reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
         [userApi.reducerPath]: userApi.reducer,
         [deviceApi.reducerPath]: deviceApi.reducer,
         [controllerApi.reducerPath]: controllerApi.reducer,
+        [sensorApi.reducerPath]:sensorApi.reducer,
         loginInfo:authReducer,
     },
     middleware: (gDM) => gDM().concat(
@@ -24,7 +26,8 @@ export const store = configureStore({
         roomApi.middleware,
         userApi.middleware,
         deviceApi.middleware,
-        controllerApi.middleware),
+        controllerApi.middleware,
+        sensorApi.middleware),
 
     devTools:true,
 });

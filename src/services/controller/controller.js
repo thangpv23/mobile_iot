@@ -30,8 +30,8 @@ export const controllerApi = createApi({
             invalidatesTags: ['Controller'],
         }),
         deleteController:builder.mutation({
-            query:(id) =>({
-                url:`rooms/${id}`,
+            query:({id,roomId}) =>({
+                url:`/controllers/${id}?roomId=${roomId}`,
                 method:"DELETE",
             }),
             invalidatesTags: ['Controller'],

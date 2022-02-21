@@ -6,7 +6,7 @@ export default (props) => {
     return (
         <View>
             <View style={styles.container}>
-                <Icon name='remote'
+                <Icon name='devices'
                       type='material-community'
                       color='#FFF'
                       size={35}
@@ -34,11 +34,15 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center'
         // backgroundColor: '#FD9A3F',
+
+
     },
     text: {
         paddingTop: 10,
         alignSelf: 'center',
         alignItems: 'center'
         // backgroundColor: '#FD9A3F',
+
+
     }
 })

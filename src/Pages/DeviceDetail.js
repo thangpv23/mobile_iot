@@ -13,11 +13,12 @@ import jwtDecode from "jwt-decode";
 
 export default (props) => {
 
-    const {data,navigation} = props;
+    const {data,controllerId,navigation} = props;
     const {refetch} = useGetDeviceByIdQuery(data.id);
     const [isEnable, setIsEnable] = useState(data.status === "ON");
     const token = useSelector(state => state.loginInfo.token);
     const decodeToken = jwtDecode(token);
+
     const handleChangeStatus = async () => {
         const client = await getClient();
         try {
@@ -33,10 +34,12 @@ export default (props) => {
                     status: newStatus,
                 },
                 time: date.toString(),
+                pin:data.pin,
                 creator: decodeToken.username,
             };
+            console.log(controllerId);
             client.on('connect', function () {
-                client.publish(`esp32/devices/${data.id}`, JSON.stringify(payload), 0, false);
+                client.publish(`${controllerId}/devices/${data.id}`, JSON.stringify(payload), 0, false);
             });
         } catch (e) {
             console.log(e)
@@ -46,6 +49,32 @@ export default (props) => {
             client.disconnect();
         }
     };
+
+    useEffect(() => {
+        const publishInit = async () => {
+            const client = await getClient();
+            try {
+                const date = new Date();
+                const payload = {
+                    device: data.type,
+                    data: {
+                        status: data.status,
+                    },
+                    time: date.toString(),
+                    pin:data.pin,
+                    creator: decodeToken.username,
+                };
+                console.log(controllerId);
+                client.on('connect', function () {
+                    client.publish(`${controllerId}/devices/${data.id}`, JSON.stringify(payload), 0, false);
+                });
+            } finally {
+                client.disconnect();
+            }
+        }
+        publishInit();
+    }, []);
+
     return (
         <View>
             <AppHeader title={data.type} navigation={navigation}/>

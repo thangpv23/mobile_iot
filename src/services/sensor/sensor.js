@@ -1,6 +1,6 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react";
 
-export const deviceApi = createApi({
+export const sensorApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: "http://10.0.2.2:8081/api/",
         prepareHeaders: (headers, { getState }) => {
@@ -12,46 +12,39 @@ export const deviceApi = createApi({
             return headers
         },
     }),
-    tagTypes:['Device'],
+    tagTypes:['Sensor'],
     endpoints: (builder) => ({
-        getDevices: builder.query({
+        getSensors: builder.query({
             query:({controllerId}) => ({
-                url:`/devices?controllerId=${controllerId}`,
+                url:`/sensors?controllerId=${controllerId}`,
                 method:"GET",
             }),
-            providesTags: ['Device'],
+            providesTags: ['Sensor'],
         }),
-        getDeviceById: builder.query({
-            query:(deviceId) =>({
-                url:`devices/${deviceId}`,
-                method:"GET",
-            }),
-            providesTags: ['Device'],
-        }),
-        addDevice :builder.mutation({
+        addSensor :builder.mutation({
             query:({body,controllerId}) =>({
-                url:`/devices?controllerId=${controllerId}`,
+                url:`/sensors?controllerId=${controllerId}`,
                 method:"POST",
                 body:body,
             }),
-            invalidatesTags: ['Device'],
+            invalidatesTags: ['Sensor'],
         }),
-        deleteDevice: builder.mutation({
+        deleteSensor: builder.mutation({
             query:({id,controllerId}) =>({
-                url:`devices/${id}?controllerId=${controllerId}`,
+                url:`/sensors/${id}?controllerId=${controllerId}`,
                 method:"DELETE",
             }),
-            invalidatesTags: ['Device'],
+            invalidatesTags: ['Sensor'],
         }),
-        putDevice: builder.mutation({
+        putSensor: builder.mutation({
             query:(body) =>({
-                url:"/devices",
+                url:"/sensors",
                 method:"POST",
                 body:body,
             }),
-            invalidatesTags: ['Device'],
+            invalidatesTags: ['Sensor'],
         })
     }),
-    reducerPath: "device",
+    reducerPath: "sensor",
 });
-export const {useGetDevicesQuery,useGetDeviceByIdQuery,usePutDeviceMutation,useDeleteDeviceMutation,useAddDeviceMutation} = deviceApi;
+export const {useGetSensorsQuery,useDeleteSensorMutation,useAddSensorMutation} = sensorApi;

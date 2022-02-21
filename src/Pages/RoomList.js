@@ -4,7 +4,8 @@ import Header from "../AppHeader";
 import AddButton from "../Components/Button/AddButton";
 import RoomButton from "../Components/Button/RoomButton";
 import {Button, Icon, Overlay} from "react-native-elements";
-import {useAddRoomMutation, useGetRoomsQuery} from "../services/room/room";
+import {useAddRoomMutation, useDeleteRoomMutation, useGetRoomsQuery} from "../services/room/room";
+import {useDeleteDeviceMutation} from "../services/device/device";
 
 export default ({route,navigation}) => {
 
@@ -17,7 +18,7 @@ export default ({route,navigation}) => {
     const [roomDeleteId,setRoomDeleteId] = useState("");
     const {data} = useGetRoomsQuery({homeId});
     const [addRoom] = useAddRoomMutation();
-    const [deleteRoom] = useAddRoomMutation();
+    const [deleteRoom] = useDeleteRoomMutation();
     const [deleteVisible, setDeleteVisible] = useState(false);
     const toggleDeleteOverlay = () => {
         setDeleteVisible(!deleteVisible);
@@ -27,7 +28,7 @@ export default ({route,navigation}) => {
     };
     const handleLongPressButton = (id) => {
         toggleDeleteOverlay();
-        setRoomDeleteId(id)
+        setRoomDeleteId(id);
     }
 
     const handleAddRoom =  async () =>{
@@ -53,7 +54,8 @@ export default ({route,navigation}) => {
     }
     const handleDeleteRoom =  async () => {
         try {
-            await deleteRoom(roomDeleteId).unwrap();
+            console.log(roomDeleteId);
+            await deleteRoom({id:roomDeleteId,homeId}).unwrap();
             toggleDeleteOverlay();
         }catch (e) {
             console.log(e)

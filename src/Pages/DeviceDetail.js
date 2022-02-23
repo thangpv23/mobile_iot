@@ -19,6 +19,8 @@ export default (props) => {
     const token = useSelector(state => state.loginInfo.token);
     const decodeToken = jwtDecode(token);
 
+    console.log(data)
+
     const handleChangeStatus = async () => {
         const client = await getClient();
         try {
@@ -45,35 +47,14 @@ export default (props) => {
             console.log(e)
         } finally {
             setIsEnable(prev => !prev);
-            refetch();
+            // play around
+            setTimeout(() => {
+                refetch();
+            }, 2000);
+
             client.disconnect();
         }
     };
-
-    useEffect(() => {
-        const publishInit = async () => {
-            const client = await getClient();
-            try {
-                const date = new Date();
-                const payload = {
-                    device: data.type,
-                    data: {
-                        status: data.status,
-                    },
-                    time: date.toString(),
-                    pin:data.pin,
-                    creator: decodeToken.username,
-                };
-                console.log(controllerId);
-                client.on('connect', function () {
-                    client.publish(`${controllerId}/devices/${data.id}`, JSON.stringify(payload), 0, false);
-                });
-            } finally {
-                client.disconnect();
-            }
-        }
-        publishInit();
-    }, []);
 
     return (
         <View>

@@ -18,20 +18,8 @@ export default (props) => {
             {/*    Fan*/}
             {/*</Text>*/}
 
-            {/*<View style={styles.container}>*/}
-            {/*    <Icon name="ceiling-light"*/}
-            {/*          type="material-community"*/}
-            {/*          color="#FD9A3F"*/}
-            {/*          size={100}*/}
-            {/*          style={styles.icon}>*/}
-            {/*    </Icon>*/}
-            {/*</View>*/}
-            {/*<Text style={styles.text}>*/}
-            {/*    Light*/}
-            {/*</Text>*/}
-
             <View style={styles.container}>
-                <Icon name="door"
+                <Icon name="ceiling-light"
                       type="material-community"
                       color="#FD9A3F"
                       size={100}
@@ -39,8 +27,20 @@ export default (props) => {
                 </Icon>
             </View>
             <Text style={styles.text}>
-                Door
+                Light
             </Text>
+
+            {/*<View style={styles.container}>*/}
+            {/*    <Icon name="door"*/}
+            {/*          type="material-community"*/}
+            {/*          color="#FD9A3F"*/}
+            {/*          size={100}*/}
+            {/*          style={styles.icon}>*/}
+            {/*    </Icon>*/}
+            {/*</View>*/}
+            {/*<Text style={styles.text}>*/}
+            {/*    Door*/}
+            {/*</Text>*/}
         </View>
 
     )
